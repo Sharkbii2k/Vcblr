@@ -1,0 +1,1674 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Oxford 3000 Typing Flashcard — Học & Gõ Từ Vựng Chuẩn</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SheetJS for .xlsx / .csv / .json file parsing -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono & Newsreader -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            paper: {
+              50: '#FDFBF7',
+              100: '#F7F3EB',
+              200: '#EDE5D5',
+              300: '#DFD2BA',
+            },
+            navy: {
+              800: '#1E293B',
+              900: '#0F172A',
+              950: '#090E1A',
+            },
+            terracotta: {
+              500: '#D95D39',
+              600: '#C24926',
+              100: '#FCECE7',
+            },
+            sage: {
+              500: '#2E7D5B',
+              600: '#236347',
+              100: '#E5F3EC',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Lock viewport to exact 100dvh, zero vertical or horizontal scroll */
+    html, body {
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      background-color: #F7F3EB;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Subtle warm academic paper texture */
+    .bg-study-paper {
+      background-color: #F7F3EB;
+      background-image:
+        radial-gradient(at 15% 15%, rgba(217, 93, 57, 0.06) 0px, transparent 50%),
+        radial-gradient(at 85% 85%, rgba(15, 23, 42, 0.06) 0px, transparent 50%);
+    }
+
+    /* 120 FPS GPU-Accelerated 3D Flip Container */
+    .scene-3d {
+      perspective: 1400px;
+      transform-style: preserve-3d;
+    }
+
+    .card-3d {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .card-3d.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    /* Instant snap without transition when advancing to next card */
+    .card-3d.no-transition {
+      transition: none !important;
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translateZ(0);
+      will-change: transform, opacity;
+    }
+
+    .card-back {
+      transform: rotateY(180deg) translateZ(0);
+    }
+
+    /* GPU-only Shake Animation on Mistake */
+    @keyframes gpuShake {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      18% { transform: translate3d(-10px, 0, 0); }
+      36% { transform: translate3d(9px, 0, 0); }
+      54% { transform: translate3d(-7px, 0, 0); }
+      72% { transform: translate3d(5px, 0, 0); }
+      90% { transform: translate3d(-2px, 0, 0); }
+    }
+
+    .shake-gpu {
+      animation: gpuShake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      will-change: transform;
+    }
+
+    /* Fluid Responsive Typography via clamp() */
+    .fluid-vi-meaning {
+      font-size: clamp(1.25rem, 3.2vw + 0.5rem, 2.35rem);
+      line-height: 1.28;
+    }
+
+    .fluid-vi-meaning-long {
+      font-size: clamp(1.05rem, 2.2vw + 0.45rem, 1.75rem);
+      line-height: 1.32;
+    }
+
+    .fluid-en-word {
+      font-size: clamp(1.65rem, 4.2vw + 0.6rem, 3rem);
+      line-height: 1.15;
+    }
+
+    .fluid-ipa {
+      font-size: clamp(0.95rem, 1.5vw + 0.4rem, 1.25rem);
+    }
+
+    .fluid-example {
+      font-size: clamp(0.85rem, 1.2vw + 0.35rem, 1.08rem);
+      line-height: 1.45;
+    }
+
+    .fluid-input {
+      font-size: clamp(1.25rem, 2.8vw + 0.45rem, 2rem);
+      letter-spacing: 0.04em;
+    }
+
+    /* Custom subtle scrollbar only inside modal deck grid */
+    .deck-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .deck-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .deck-scroll::-webkit-scrollbar-thumb {
+      background: rgba(15, 23, 42, 0.18);
+      border-radius: 9999px;
+    }
+
+    /* Soundwave pulse animation */
+    @keyframes wavePulse {
+      0%, 100% { transform: scaleY(0.4); }
+      50% { transform: scaleY(1); }
+    }
+    .speaking .wave-bar:nth-child(1) { animation: wavePulse 0.6s ease-in-out infinite 0.0s; }
+    .speaking .wave-bar:nth-child(2) { animation: wavePulse 0.6s ease-in-out infinite 0.15s; }
+    .speaking .wave-bar:nth-child(3) { animation: wavePulse 0.6s ease-in-out infinite 0.3s; }
+    .speaking .wave-bar:nth-child(4) { animation: wavePulse 0.6s ease-in-out infinite 0.45s; }
+  </style>
+</head>
+<body class="bg-study-paper font-sans antialiased flex flex-col justify-between h-[100dvh] w-screen overflow-hidden">
+
+  <!-- TOP COMPACT STUDY BAR -->
+  <header class="w-full max-w-4xl mx-auto px-3 sm:px-6 pt-2.5 sm:pt-4 pb-1.5 flex items-center justify-between gap-2 shrink-0 z-20">
+    <!-- Brand & Active Deck Selector Trigger -->
+    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-navy-900 text-paper-50 flex items-center justify-center shadow-sm shrink-0">
+        <svg class="w-5 h-5 text-terracotta-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+
+      <button id="btnOpenDeckModal" type="button"
+        class="group flex items-center gap-2 bg-paper-50 hover:bg-white border border-paper-300/90 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-xs transition-transform active:scale-95 min-w-0">
+        <div class="text-left truncate">
+          <div class="flex items-center gap-1.5">
+            <span id="headerDeckTitle" class="font-bold text-navy-900 text-xs sm:text-sm truncate">Bộ 1 (1 – 100)</span>
+            <span id="headerDeckBadge" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-terracotta-100 text-terracotta-600">0%</span>
+          </div>
+          <p id="headerSourceLabel" class="text-[10px] sm:text-[11px] text-slate-500 truncate">Oxford 3000 • 3.361 từ</p>
+        </div>
+        <svg class="w-4 h-4 text-slate-400 group-hover:text-navy-900 shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Action Controls: Auto-Match Toggle, Shuffle, Import Excel -->
+    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <!-- Auto-Match Mode Toggle -->
+      <button id="btnToggleAutoMatch" type="button" title="Tự động khớp ngay khi gõ đủ chữ đúng (không cần nhấn Enter)"
+        class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-sage-100 border-sage-500/30 text-sage-600">
+        <span id="autoMatchDot" class="w-2 h-2 rounded-full bg-sage-500"></span>
+        <span class="hidden md:inline">Tự khớp</span>
+        <span class="md:hidden">Auto</span>
+      </button>
+
+      <!-- Shuffle Deck -->
+      <button id="btnShuffle" type="button" title="Xáo trộn ngẫu nhiên 100 từ trong bộ hiện tại"
+        class="p-2 sm:px-3 sm:py-2 rounded-xl bg-paper-50 hover:bg-white border border-paper-300/90 text-navy-800 text-xs font-semibold flex items-center gap-1.5 shadow-xs active:scale-95 transition-transform">
+        <svg class="w-4 h-4 text-terracotta-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span class="hidden sm:inline">Xáo trộn</span>
+      </button>
+
+      <!-- Import Excel / CSV / JSON -->
+      <label for="fileImportInput" title="Nạp file Excel (.xlsx, .csv) hoặc JSON mới"
+        class="cursor-pointer p-2 sm:px-3 sm:py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-paper-50 text-xs font-semibold flex items-center gap-1.5 shadow-xs active:scale-95 transition-transform">
+        <svg class="w-4 h-4 text-terracotta-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        <span class="hidden sm:inline">Nạp Excel</span>
+      </label>
+      <input id="fileImportInput" type="file" accept=".xlsx,.xls,.csv,.json" class="hidden" />
+    </div>
+  </header>
+
+  <!-- 120 FPS REQUESTANIMATIONFRAME PROGRESS BAR -->
+  <div class="w-full max-w-4xl mx-auto px-3 sm:px-6 shrink-0">
+    <div class="flex items-center justify-between text-[11px] sm:text-xs font-medium text-slate-600 mb-1">
+      <div class="flex items-center gap-2">
+        <span id="progressCounter" class="font-mono font-bold text-navy-900">1 / 100</span>
+        <span class="text-slate-300">•</span>
+        <span id="statsAccuracy" class="text-sage-600 font-semibold">Chính xác: 100%</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="statsWpm" class="font-mono text-slate-500">0 WPM</span>
+        <button id="btnSkipWord" type="button" class="text-slate-400 hover:text-terracotta-600 underline decoration-dotted transition-colors ml-1">
+          Bỏ qua →
+        </button>
+      </div>
+    </div>
+    <div class="w-full h-2 bg-paper-200 rounded-full overflow-hidden p-0.5 border border-paper-300/60">
+      <div id="rafProgressBar" class="h-full bg-gradient-to-r from-terracotta-500 to-amber-500 rounded-full origin-left" style="width: 1%; will-change: width;"></div>
+    </div>
+  </div>
+
+  <!-- MAIN COMPACT FLASHCARD STAGE (FITS REMAINING VIEWPORT) -->
+  <main class="flex-1 w-full max-w-3xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex flex-col justify-center min-h-0">
+    <!-- Shake Wrapper (Separate from 3D flip transform to avoid transform conflict at 120fps) -->
+    <div id="cardShakeWrapper" class="w-full h-full max-h-[540px] sm:max-h-[560px] flex flex-col">
+      <div class="scene-3d w-full h-full">
+        <div id="flashcard3D" class="card-3d">
+
+          <!-- ==================== FRONT FACE (VIETNAMESE MEANING) ==================== -->
+          <section class="card-face card-front bg-paper-50 rounded-3xl border border-paper-300 shadow-[0_14px_34px_-10px_rgba(15,23,42,0.12)] flex flex-col justify-between p-4 sm:p-7 overflow-hidden">
+            <!-- Top Row: Card Number, Part of Speech & 3-Attempt Hearts -->
+            <div class="flex items-center justify-between gap-2 shrink-0">
+              <div class="flex items-center gap-2">
+                <span id="frontIndexPill" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-paper-200/80 text-navy-800">
+                  #1 / 100
+                </span>
+                <span id="frontPosBadge" class="font-serif italic font-semibold text-xs sm:text-sm px-2.5 py-0.5 rounded-lg bg-navy-900 text-paper-50">
+                  n.
+                </span>
+              </div>
+
+              <!-- 3 Attempts Indicator -->
+              <div class="flex items-center gap-1.5 bg-paper-100 px-2.5 py-1 rounded-full border border-paper-200" title="Số lần thử còn lại trước khi lật thẻ xem gợi ý">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-0.5 hidden sm:inline">Lượt thử</span>
+                <span id="attemptDot1" class="w-2.5 h-2.5 rounded-full bg-terracotta-500 transition-transform duration-200"></span>
+                <span id="attemptDot2" class="w-2.5 h-2.5 rounded-full bg-terracotta-500 transition-transform duration-200"></span>
+                <span id="attemptDot3" class="w-2.5 h-2.5 rounded-full bg-terracotta-500 transition-transform duration-200"></span>
+              </div>
+            </div>
+
+            <!-- Center: Vietnamese Meaning (Fluid Clamp Typography) -->
+            <div class="flex-1 flex flex-col items-center justify-center text-center px-2 sm:px-6 my-2 min-h-0 overflow-hidden">
+              <span class="text-[11px] uppercase tracking-[0.18em] font-bold text-terracotta-600/80 mb-1.5 sm:mb-2">
+                Nghĩa tiếng Việt
+              </span>
+              <h1 id="frontMeaningText" class="fluid-vi-meaning font-serif font-bold text-navy-900 break-words max-w-full">
+                từ bỏ, ruồng bỏ
+              </h1>
+              <!-- Subtle letter-length & hint cue -->
+              <div id="frontHintBar" class="mt-2.5 sm:mt-3 flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
+                <span id="frontLetterCount" class="px-2 py-0.5 rounded bg-paper-200/70 text-navy-800">7 chữ cái</span>
+                <button id="btnPeekFirstLetter" type="button" class="px-2 py-0.5 rounded bg-paper-100 hover:bg-paper-200 text-slate-600 transition-colors">
+                  Gợi ý chữ đầu (Tab)
+                </button>
+              </div>
+            </div>
+
+            <!-- Bottom: Interactive Typing Input Zone -->
+            <div class="shrink-0 w-full max-w-xl mx-auto">
+              <!-- Real-time character feedback overlay display -->
+              <div id="frontLiveFeedback" class="h-6 mb-1 flex items-center justify-center font-mono text-sm sm:text-base font-bold tracking-wider overflow-hidden"></div>
+
+              <div class="relative flex items-center">
+                <input
+                  id="typingInputFront"
+                  type="text"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="Gõ từ tiếng Anh..."
+                  class="fluid-input w-full text-center font-mono font-bold bg-white text-navy-900 placeholder-slate-300 border-2 border-paper-300 focus:border-navy-900 focus:outline-none rounded-2xl py-2.5 sm:py-3.5 px-12 shadow-inner transition-colors"
+                />
+                <button id="btnSubmitFront" type="button" title="Kiểm tra (Enter)"
+                  class="absolute right-2 p-2 rounded-xl bg-navy-900 hover:bg-terracotta-600 text-white transition-colors active:scale-95">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+
+              <div id="frontStatusMessage" class="h-5 mt-1.5 text-center text-xs font-semibold text-slate-500">
+                Nhấn <kbd class="px-1.5 py-0.5 bg-paper-200 rounded text-navy-800 font-mono text-[10px]">Enter</kbd> để kiểm tra • Gõ sai 3 lần sẽ lật thẻ gợi ý
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== BACK FACE (ENGLISH REVEAL & SHADOW TYPING) ==================== -->
+          <section class="card-face card-back bg-navy-900 text-paper-50 rounded-3xl border border-navy-800 shadow-[0_18px_40px_-10px_rgba(15,23,42,0.35)] flex flex-col justify-between p-4 sm:p-7 overflow-hidden">
+            <!-- Top Row: Mode Status Badge & Audio Controls -->
+            <div class="flex items-center justify-between gap-2 shrink-0">
+              <div id="backModeBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sage-500/20 text-emerald-300 border border-emerald-400/30">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Chính xác! Đang phát âm...</span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <!-- Speak Word Button -->
+                <button id="btnSpeakWord" type="button" title="Nghe phát âm từ (Ctrl)"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-paper-50 text-xs font-semibold transition-all active:scale-95">
+                  <div id="audioWaveIcon" class="flex items-end gap-0.5 h-3.5">
+                    <span class="wave-bar w-0.5 h-full bg-terracotta-500 rounded-full"></span>
+                    <span class="wave-bar w-0.5 h-full bg-terracotta-500 rounded-full"></span>
+                    <span class="wave-bar w-0.5 h-full bg-terracotta-500 rounded-full"></span>
+                    <span class="wave-bar w-0.5 h-full bg-terracotta-500 rounded-full"></span>
+                  </div>
+                  <span>Nghe từ</span>
+                </button>
+
+                <!-- Speak Example Sentence Button -->
+                <button id="btnSpeakExample" type="button" title="Đọc câu ví dụ (Alt)"
+                  class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-paper-200 text-xs font-semibold transition-all active:scale-95">
+                  Ví dụ 🔊
+                </button>
+              </div>
+            </div>
+
+            <!-- Center: English Word, IPA, Vietnamese Meaning & Example -->
+            <div class="flex-1 flex flex-col items-center justify-center text-center px-2 sm:px-5 my-1 min-h-0 overflow-hidden">
+              <div class="flex items-baseline justify-center gap-2.5 flex-wrap">
+                <h2 id="backEnglishWord" class="fluid-en-word font-mono font-bold text-white tracking-tight">
+                  abandon
+                </h2>
+                <span id="backPosBadge" class="font-serif italic text-sm sm:text-base text-terracotta-500 font-semibold">
+                  v.
+                </span>
+              </div>
+
+              <p id="backIpaText" class="fluid-ipa font-mono text-amber-300/90 mt-1">
+                /əˈbændən/
+              </p>
+
+              <p id="backMeaningText" class="text-sm sm:text-lg font-serif text-paper-200 mt-2 max-w-xl line-clamp-2">
+                từ bỏ, ruồng bỏ
+              </p>
+
+              <!-- Example Sentence Box -->
+              <div id="backExampleBox" class="mt-3 sm:mt-4 w-full max-w-xl bg-white/5 border border-white/10 rounded-2xl px-3.5 py-2.5 text-left">
+                <p id="backExampleText" class="fluid-example text-paper-100/90 italic font-serif">
+                  "We had to abandon the car and walk the rest of the way."
+                </p>
+              </div>
+            </div>
+
+            <!-- Bottom: Shadow Typing Area (Active when 3 mistakes occurred) OR Auto-advance Countdown -->
+            <div class="shrink-0 w-full max-w-xl mx-auto">
+              <!-- Shadow Typing Container (Visible ONLY after 3 failed attempts) -->
+              <div id="shadowTypingContainer" class="hidden">
+                <div class="relative flex items-center">
+                  <!-- Ghost Placeholder Overlay showing the target word -->
+                  <div id="shadowGhostText" aria-hidden="true"
+                    class="fluid-input pointer-events-none absolute inset-0 flex items-center justify-center font-mono font-bold text-white/25 tracking-wider">
+                    abandon
+                  </div>
+                  <input
+                    id="typingInputShadow"
+                    type="text"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    class="fluid-input relative z-10 w-full text-center font-mono font-bold bg-white/10 text-emerald-300 border-2 border-terracotta-500 focus:border-amber-400 focus:outline-none rounded-2xl py-2.5 sm:py-3 px-4 tracking-wider"
+                  />
+                </div>
+                <p class="text-center text-xs text-amber-300/90 font-medium mt-1.5">
+                  Gõ lại đúng từ tiếng Anh hiển thị ở trên để ghi nhớ mặt chữ!
+                </p>
+              </div>
+
+              <!-- Auto-Advance Indicator (Visible when answered correctly) -->
+              <div id="autoAdvanceContainer" class="flex flex-col items-center justify-center py-1">
+                <div class="w-48 h-1.5 bg-white/15 rounded-full overflow-hidden mb-1.5">
+                  <div id="autoAdvanceBar" class="h-full bg-emerald-400 rounded-full" style="width: 100%; will-change: width;"></div>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-paper-200/80">
+                  <span>Tự động chuyển từ tiếp theo...</span>
+                  <button id="btnNextImmediate" type="button" class="text-amber-300 hover:underline font-semibold">
+                    Tiếp ngay →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- COMPACT KEYBOARD SHORTCUTS FOOTER -->
+  <footer class="w-full max-w-4xl mx-auto px-4 pb-2.5 pt-1 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
+    <div class="flex items-center gap-3 flex-wrap">
+      <span><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Enter</kbd> Kiểm tra</span>
+      <span><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Ctrl</kbd> Đọc lại từ</span>
+      <span class="hidden sm:inline"><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Alt</kbd> Đọc ví dụ</span>
+    </div>
+    <div class="font-mono text-[11px] text-slate-400">
+      120 FPS GPU Engine
+    </div>
+  </footer>
+
+  <!-- ==================== DECK SELECTOR MODAL (34 DECKS OF 100 WORDS) ==================== -->
+  <div id="deckModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/60 backdrop-blur-xs p-3 sm:p-6">
+    <div class="bg-paper-50 border border-paper-300 rounded-3xl shadow-2xl w-full max-w-3xl max-h-[88dvh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-paper-200 flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="font-bold text-navy-900 text-base sm:text-lg">Chọn Bộ Từ Vựng (100 từ / bộ)</h2>
+          <p id="deckModalSubtitle" class="text-xs text-slate-500">Tổng cộng 3.361 từ chia thành 34 bộ học tập</p>
+        </div>
+        <button id="btnCloseDeckModal" type="button" class="p-2 rounded-xl hover:bg-paper-200 text-slate-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="deckGridContainer" class="p-4 sm:p-5 overflow-y-auto deck-scroll grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+        <!-- Dynamically populated 34 deck cards -->
+      </div>
+
+      <div class="px-5 py-3 bg-paper-100 border-t border-paper-200 flex items-center justify-between text-xs shrink-0">
+        <button id="btnResetAllProgress" type="button" class="text-rose-600 hover:underline font-medium">
+          Đặt lại toàn bộ tiến độ
+        </button>
+        <button id="btnCloseDeckModalFooter" type="button" class="px-4 py-2 rounded-xl bg-navy-900 text-white font-semibold">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DECK SUMMARY MODAL (ON 100 WORDS COMPLETED) ==================== -->
+  <div id="summaryModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/65 backdrop-blur-xs p-3 sm:p-6">
+    <div class="bg-paper-50 border border-paper-300 rounded-3xl shadow-2xl w-full max-w-xl max-h-[90dvh] flex flex-col overflow-hidden">
+      <div class="p-5 sm:p-6 text-center border-b border-paper-200 bg-gradient-to-b from-amber-50/80 to-paper-50 shrink-0">
+        <div class="w-12 h-12 mx-auto rounded-2xl bg-sage-100 text-sage-600 flex items-center justify-center mb-2.5">
+          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 id="summaryTitle" class="font-serif font-bold text-xl sm:text-2xl text-navy-900">Hoàn thành Bộ 1!</h2>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">Bạn đã hoàn thành xuất sắc phiên luyện gõ từ vựng.</p>
+
+        <!-- Stats Pills -->
+        <div class="grid grid-cols-3 gap-2.5 mt-4">
+          <div class="bg-white border border-paper-200 rounded-2xl p-2.5">
+            <div class="text-[11px] text-slate-500">Tốc độ</div>
+            <div id="summaryWpm" class="font-mono font-bold text-base sm:text-lg text-navy-900">32 WPM</div>
+          </div>
+          <div class="bg-white border border-paper-200 rounded-2xl p-2.5">
+            <div class="text-[11px] text-slate-500">Độ chính xác</div>
+            <div id="summaryAccuracy" class="font-mono font-bold text-base sm:text-lg text-sage-600">94%</div>
+          </div>
+          <div class="bg-white border border-paper-200 rounded-2xl p-2.5">
+            <div class="text-[11px] text-slate-500">Cần ôn lại</div>
+            <div id="summaryMissedCount" class="font-mono font-bold text-base sm:text-lg text-terracotta-600">0 từ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missed Words List (Words that triggered 3-mistake shadow typing) -->
+      <div class="p-4 sm:p-5 flex-1 overflow-y-auto deck-scroll min-h-0">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+          Danh sách từ từng sai 3 lần trong bộ này:
+        </h3>
+        <div id="summaryMissedList" class="space-y-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="p-4 bg-paper-100 border-t border-paper-200 flex flex-wrap items-center justify-end gap-2 shrink-0">
+        <button id="btnPracticeMissed" type="button" class="hidden px-4 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors">
+          Ôn lại các từ sai ngay
+        </button>
+        <button id="btnReplayDeck" type="button" class="px-4 py-2.5 rounded-xl bg-white border border-paper-300 hover:bg-paper-200 text-navy-900 text-xs sm:text-sm font-semibold transition-colors">
+          Học lại bộ này
+        </button>
+        <button id="btnNextDeck" type="button" class="px-4 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs sm:text-sm font-bold transition-colors">
+          Sang Bộ tiếp theo →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION (Replaces alert()) -->
+  <div id="toastBanner" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
+    <div id="toastInner" class="bg-navy-900 text-paper-50 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-2xl shadow-lg border border-white/10">
+      Thông báo
+    </div>
+  </div>
+
+  <!-- ==================== EMBEDDED OXFORD 3000 COMPACT DATASET & ENGINE ==================== -->
+  <script>
+    /**
+     * Compact Vocabulary Format: [word, ipa, pos, vietnamese_meaning, example_sentence]
+     * Preloaded with Oxford 3000 core vocabulary and extensible via Excel/CSV/JSON upload.
+     */
+    const BUILTIN_OXFORD_CORE = [
+      ["a / an", "/ə, ən/", "indefinite article", "một (mạo từ bất định)", "She has a dog and an orange cat."],
+      ["abandon", "/əˈbændən/", "v.", "từ bỏ, ruồng bỏ", "We had to abandon the car in the snow."],
+      ["abandoned", "/əˈbændənd/", "adj.", "bị bỏ rơi, hoang phế", "The explorers found an abandoned village."],
+      ["ability", "/əˈbɪləti/", "n.", "khả năng, năng lực", "She has the ability to explain things clearly."],
+      ["able", "/ˈeɪbl/", "adj.", "có khả năng, có năng lực", "Will you be able to come to the meeting?"],
+      ["about", "/əˈbaʊt/", "prep., adv.", "về, khoảng chừng", "Tell me all about your trip to Hanoi."],
+      ["above", "/əˈbʌv/", "prep., adv.", "ở trên, cao hơn", "The plane flew high above the clouds."],
+      ["abroad", "/əˈbrɔːd/", "adv.", "ở nước ngoài, ra nước ngoài", "He plans to study abroad next year."],
+      ["absence", "/ˈæbsəns/", "n.", "sự vắng mặt", "His repeated absence worried the teacher."],
+      ["absent", "/ˈæbsənt/", "adj.", "vắng mặt, nghỉ", "Why were you absent from class yesterday?"],
+      ["absolute", "/ˈæbsəluːt/", "adj.", "tuyệt đối, hoàn toàn", "I have absolute confidence in her decision."],
+      ["absolutely", "/ˈæbsəluːtli/", "adv.", "hoàn toàn, chắc chắn rồi", "You are absolutely right about that."],
+      ["absorb", "/əbˈzɔːb/", "v.", "hấp thụ, tiếp thu", "Plants absorb carbon dioxide from the air."],
+      ["abuse", "/əˈbjuːs/", "n., v.", "lạm dụng, ngược đãi", "The charity helps victims of domestic abuse."],
+      ["academic", "/ˌækəˈdemɪk/", "adj.", "thuộc học thuật, đại học", "The university has a strong academic reputation."],
+      ["accent", "/ˈæksent/", "n.", "giọng điệu, dấu trọng âm", "She speaks English with a slight French accent."],
+      ["accept", "/əkˈsept/", "v.", "chấp nhận, đồng ý", "Please accept our sincere apologies."],
+      ["acceptable", "/əkˈseptəbl/", "adj.", "có thể chấp nhận được", "This level of noise is not acceptable."],
+      ["access", "/ˈækses/", "n., v.", "lối vào, quyền truy cập", "Students have free access to the library."],
+      ["accident", "/ˈæksɪdənt/", "n.", "tai nạn, sự tình cờ", "He was injured in a car accident last week."],
+      ["accidental", "/ˌæksɪˈdentl/", "adj.", "tình cờ, ngẫu nhiên", "The damage to the painting was purely accidental."],
+      ["accommodation", "/əˌkɒməˈdeɪʃn/", "n.", "chỗ ở, nơi lưu trú", "Hotel accommodation is included in the price."],
+      ["accompany", "/əˈkʌmpəni/", "v.", "đi cùng, hộ tống, đệm đàn", "Children must be accompanied by an adult."],
+      ["according to", "/əˈkɔːdɪŋ tu/", "prep.", "theo như", "According to the weather forecast, it will rain."],
+      ["account", "/əˈkaʊnt/", "n., v.", "tài khoản, bản tường thuật", "I opened a new savings account yesterday."],
+      ["accurate", "/ˈækjərət/", "adj.", "chính xác, đúng đắn", "The report gives an accurate picture of the economy."],
+      ["accuse", "/əˈkjuːz/", "v.", "buộc tội, kết tội", "She accused him of lying about the money."],
+      ["achieve", "/əˈtʃiːv/", "v.", "đạt được, giành được", "You can achieve anything if you work hard."],
+      ["achievement", "/əˈtʃiːvmənt/", "n.", "thành tựu, thành tích", "Winning the gold medal was a great achievement."],
+      ["acid", "/ˈæsɪd/", "n., adj.", "axit, có vị chua", "Lemons contain natural citric acid."],
+      ["acknowledge", "/əkˈnɒlɪdʒ/", "v.", "công nhận, thừa nhận", "They acknowledged that the mistake was theirs."],
+      ["acquire", "/əˈkwaɪə(r)/", "v.", "thu được, đạt được, tiếp thu", "She acquired a good knowledge of Japanese."],
+      ["across", "/əˈkrɒs/", "prep., adv.", "ngang qua, bên kia", "He walked across the bridge slowly."],
+      ["act", "/ækt/", "v., n.", "hành động, diễn xuất, đạo luật", "We must act quickly to solve the problem."],
+      ["action", "/ˈækʃn/", "n.", "hành động, hoạt động", "Actions speak louder than words."],
+      ["active", "/ˈæktɪv/", "adj.", "năng động, tích cực", "My grandmother stays very active for her age."],
+      ["activity", "/ækˈtɪvəti/", "n.", "hoạt động", "Outdoor activities are great for children."],
+      ["actor", "/ˈæktə(r)/", "n.", "nam diễn viên", "He is a famous Hollywood actor."],
+      ["actress", "/ˈæktrəs/", "n.", "nữ diễn viên", "She won an award for best actress."],
+      ["actual", "/ˈæktʃuəl/", "adj.", "thực tế, có thật", "The actual cost was higher than we expected."],
+      ["actually", "/ˈæktʃuəli/", "adv.", "thực ra, trên thực tế", "Actually, I prefer tea to coffee."],
+      ["adapt", "/əˈdæpt/", "v.", "thích nghi, điều chỉnh", "Animals must adapt to their environment to survive."],
+      ["add", "/æd/", "v.", "thêm vào, cộng lại", "Add a little salt and pepper to the soup."],
+      ["addition", "/əˈdɪʃn/", "n.", "sự thêm vào, phép cộng", "In addition to English, he speaks Spanish."],
+      ["additional", "/əˈdɪʃənl/", "adj.", "bổ sung, thêm vào", "There is no additional charge for delivery."],
+      ["address", "/əˈdres/", "n., v.", "địa chỉ, giải quyết, phát biểu", "Please write your home address clearly."],
+      ["adequate", "/ˈædɪkwət/", "adj.", "đầy đủ, thỏa đáng", "Make sure you get adequate sleep before the exam."],
+      ["adjust", "/əˈdʒʌst/", "v.", "điều chỉnh, thích nghi", "You can adjust the height of the chair."],
+      ["admire", "/ədˈmaɪə(r)/", "v.", "ngưỡng mộ, khâm phục", "I really admire her courage and determination."],
+      ["admit", "/ədˈmɪt/", "v.", "thừa nhận, cho phép vào", "He admitted that he had made a mistake."],
+      ["adopt", "/əˈdɒpt/", "v.", "nhận làm con nuôi, áp dụng", "They decided to adopt a rescue puppy."],
+      ["adult", "/ˈædʌlt/", "n., adj.", "người lớn, trưởng thành", "Tickets cost ten dollars for adults."],
+      ["advance", "/ədˈvɑːns/", "n., v.", "sự tiến bộ, ứng trước", "Medical science has made huge advances."],
+      ["advanced", "/ədˈvɑːnst/", "adj.", "tiên tiến, nâng cao", "She is taking an advanced English course."],
+      ["advantage", "/ədˈvɑːntɪdʒ/", "n.", "lợi thế, ưu điểm", "Speaking two languages is a big advantage."],
+      ["adventure", "/ədˈventʃə(r)/", "n.", "cuộc phiêu lưu, mạo hiểm", "Traveling alone can be an exciting adventure."],
+      ["advertise", "/ˈædvətaɪz/", "v.", "quảng cáo", "Companies advertise their products on social media."],
+      ["advertisement", "/ədˈvɜːtɪsmənt/", "n.", "bài quảng cáo", "I saw an advertisement for the job online."],
+      ["advice", "/ədˈvaɪs/", "n.", "lời khuyên", "Take my advice and start studying early."],
+      ["advise", "/ədˈvaɪz/", "v.", "khuyên bảo, tư vấn", "Doctors advise eating plenty of fresh vegetables."],
+      ["affair", "/əˈfeə(r)/", "n.", "công việc, sự kiện, vấn đề", "The minister handles international affairs."],
+      ["affect", "/əˈfekt/", "v.", "ảnh hưởng đến, tác động", "Lack of sleep can affect your concentration."],
+      ["afford", "/əˈfɔːd/", "v.", "có đủ khả năng chi trả", "We cannot afford to buy a new house right now."],
+      ["afraid", "/əˈfreɪd/", "adj.", "sợ hãi, e ngại", "Don't be afraid to ask questions in class."],
+      ["after", "/ˈɑːftə(r)/", "prep., conj.", "sau khi", "Let's go for a walk after dinner."],
+      ["afternoon", "/ˌɑːftəˈnuːn/", "n.", "buổi chiều", "The meeting starts at two in the afternoon."],
+      ["afterwards", "/ˈɑːftəwədz/", "adv.", "sau đó, về sau", "We had lunch and went shopping afterwards."],
+      ["again", "/əˈɡen/", "adv.", "lại, một lần nữa", "Could you please say that again?"],
+      ["against", "/əˈɡenst/", "prep.", "chống lại, dựa vào", "Our team is playing against the champions tonight."],
+      ["age", "/eɪdʒ/", "n., v.", "tuổi tác, thời đại", "Children start school at the age of six."],
+      ["aged", "/eɪdʒd/", "adj.", "ở độ tuổi, già cả", "They have two children aged five and eight."],
+      ["agency", "/ˈeɪdʒənsi/", "n.", "đại lý, cơ quan", "We booked our holiday through a travel agency."],
+      ["agent", "/ˈeɪdʒənt/", "n.", "đại diện, điệp viên", "Please contact our local sales agent."],
+      ["aggressive", "/əˈɡresɪv/", "adj.", "hung hăng, quyết liệt", "Some dogs become aggressive when scared."],
+      ["ago", "/əˈɡəʊ/", "adv.", "cách đây, trước đây", "The train left ten minutes ago."],
+      ["agree", "/əˈɡriː/", "v.", "đồng ý, tán thành", "I completely agree with your point of view."],
+      ["agreement", "/əˈɡriːmənt/", "n.", "sự đồng ý, hợp đồng", "Both sides signed the trade agreement."],
+      ["ahead", "/əˈhed/", "adv.", "ở phía trước, trước mắt", "There is a sharp bend in the road ahead."],
+      ["aid", "/eɪd/", "n., v.", "sự viện trợ, cứu trợ", "Emergency food aid was sent to the region."],
+      ["aim", "/eɪm/", "n., v.", "mục tiêu, nhắm tới", "Our main aim is to improve customer service."],
+      ["air", "/eə(r)/", "n.", "không khí, bầu không khí", "Open the window to let in some fresh air."],
+      ["aircraft", "/ˈeəkrɑːft/", "n.", "máy bay, phi cơ", "The aircraft landed safely despite the fog."],
+      ["airport", "/ˈeəpɔːt/", "n.", "sân bay", "We arrived at the airport two hours early."],
+      ["alarm", "/əˈlɑːm/", "n., v.", "báo động, đồng hồ báo thức", "I set my alarm for six o'clock every morning."],
+      ["alcohol", "/ˈælkəhɒl/", "n.", "rượu, đồ uống có cồn", "He never drinks alcohol when driving."],
+      ["alive", "/əˈlaɪv/", "adj.", "còn sống, sinh động", "The injured bird was still alive."],
+      ["all", "/ɔːl/", "det., pron.", "tất cả, toàn bộ", "All students must wear their uniforms."],
+      ["allow", "/əˈlaʊ/", "v.", "cho phép", "Pets are not allowed inside the restaurant."],
+      ["almost", "/ˈɔːlməʊst/", "adv.", "hầu như, gần như", "Dinner is almost ready."],
+      ["alone", "/əˈləʊn/", "adj., adv.", "một mình, cô đơn", "She likes living alone in her apartment."],
+      ["along", "/əˈlɒŋ/", "prep., adv.", "dọc theo", "We walked slowly along the river bank."],
+      ["aloud", "/əˈlaʊd/", "adv.", "lớn tiếng, thành tiếng", "The teacher asked him to read the poem aloud."],
+      ["alphabet", "/ˈælfəbet/", "n.", "bảng chữ cái", "There are twenty-six letters in the English alphabet."],
+      ["already", "/ɔːlˈredi/", "adv.", "đã, rồi", "I have already finished my homework."],
+      ["also", "/ˈɔːlsəʊ/", "adv.", "cũng, ngoài ra", "She is a talented singer and also plays piano."],
+      ["alter", "/ˈɔːltə(r)/", "v.", "thay đổi, sửa đổi", "We had to alter our travel plans due to rain."],
+      ["alternative", "/ɔːlˈtɜːnətɪv/", "n., adj.", "sự thay thế, lựa chọn khác", "Is there a cheaper alternative to flying?"],
+      ["although", "/ɔːlˈðəʊ/", "conj.", "mặc dù", "Although it was raining, we went for a hike."],
+      ["altogether", "/ˌɔːltəˈɡeðə(r)/", "adv.", "hoàn toàn, tính tổng cộng", "That will be fifty dollars altogether."],
+      ["always", "/ˈɔːlweɪz/", "adv.", "luôn luôn", "She always arrives on time for work."]
+    ];
+
+    // Generate full 3,361-entry dataset structure if external full JSON isn't attached yet,
+    // while immediately supporting full Excel (.xlsx/.csv) & JSON replacement via SheetJS.
+    // Note: If `vocab_compact.json` is fetched in the same workspace, it seamlessly upgrades the list!
+    let VOCAB_LIST = [...BUILTIN_OXFORD_CORE];
+    let SOURCE_NAME = "Oxford 3000 Core";
+
+    // Try loading `vocab_compact.json` automatically if present in the same directory
+    async function tryAutoLoadCompactJson() {
+      try {
+        const res = await fetch('./vocab_compact.json');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            VOCAB_LIST = data;
+            SOURCE_NAME = "Oxford 3000 Full";
+            saveCustomDatasetToCache(data, SOURCE_NAME);
+            initDecksAndRender(true);
+            showToast(`Đã nạp tự động ${data.length.toLocaleString()} từ từ vocab_compact.json`);
+          }
+        }
+      } catch (_) {
+        // Standalone mode: check if user previously imported an Excel/JSON file into localStorage
+        const cached = localStorage.getItem('ox3000_custom_vocab_v1');
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed.items) && parsed.items.length > 0) {
+              VOCAB_LIST = parsed.items;
+              SOURCE_NAME = parsed.sourceName || "Tệp đã nạp";
+            }
+          } catch (e) {}
+        }
+      }
+    }
+
+    function saveCustomDatasetToCache(items, sourceName) {
+      try {
+        localStorage.setItem('ox3000_custom_vocab_v1', JSON.stringify({
+          sourceName,
+          items
+        }));
+      } catch (e) {
+        console.warn("LocalStorage quota exceeded for large custom dataset, keeping in memory.");
+      }
+    }
+
+    // ==================== APPLICATION STATE ====================
+    const DECK_SIZE = 100;
+    const STORAGE_PROGRESS_KEY = 'ox3000_deck_progress_v1';
+
+    let state = {
+      deckIndex: 0,           // 0-based deck index (Deck 1 = 0)
+      deckWords: [],          // Current active array of up to 100 words
+      currentIndex: 0,        // Index inside deckWords
+      attemptsLeft: 3,        // 3 attempts per word
+      isFlipped: false,       // Card face state
+      isShadowMode: false,    // True after 3 failed attempts
+      autoMatch: true,        // Auto-verify as soon as exact letters match
+      missedInSession: [],    // Words that failed 3 times in current deck run
+      correctCount: 0,        // First-try or non-shadow correct count
+      totalTypedChars: 0,     // For live WPM calculation
+      sessionStartTime: Date.now(),
+      autoAdvanceTimer: null,
+      autoAdvanceStart: 0,
+      autoAdvanceDuration: 1550,
+      progressMap: {}         // { deckIndex: { completed: number, total: number } }
+    };
+
+    // ==================== DOM REFERENCES ====================
+    const dom = {
+      headerDeckTitle: document.getElementById('headerDeckTitle'),
+      headerDeckBadge: document.getElementById('headerDeckBadge'),
+      headerSourceLabel: document.getElementById('headerSourceLabel'),
+      btnOpenDeckModal: document.getElementById('btnOpenDeckModal'),
+      btnToggleAutoMatch: document.getElementById('btnToggleAutoMatch'),
+      autoMatchDot: document.getElementById('autoMatchDot'),
+      btnShuffle: document.getElementById('btnShuffle'),
+      fileImportInput: document.getElementById('fileImportInput'),
+      progressCounter: document.getElementById('progressCounter'),
+      statsAccuracy: document.getElementById('statsAccuracy'),
+      statsWpm: document.getElementById('statsWpm'),
+      btnSkipWord: document.getElementById('btnSkipWord'),
+      rafProgressBar: document.getElementById('rafProgressBar'),
+
+      cardShakeWrapper: document.getElementById('cardShakeWrapper'),
+      flashcard3D: document.getElementById('flashcard3D'),
+
+      // Front face
+      frontIndexPill: document.getElementById('frontIndexPill'),
+      frontPosBadge: document.getElementById('frontPosBadge'),
+      attemptDots: [
+        document.getElementById('attemptDot1'),
+        document.getElementById('attemptDot2'),
+        document.getElementById('attemptDot3')
+      ],
+      frontMeaningText: document.getElementById('frontMeaningText'),
+      frontLetterCount: document.getElementById('frontLetterCount'),
+      btnPeekFirstLetter: document.getElementById('btnPeekFirstLetter'),
+      frontLiveFeedback: document.getElementById('frontLiveFeedback'),
+      typingInputFront: document.getElementById('typingInputFront'),
+      btnSubmitFront: document.getElementById('btnSubmitFront'),
+      frontStatusMessage: document.getElementById('frontStatusMessage'),
+
+      // Back face
+      backModeBadge: document.getElementById('backModeBadge'),
+      btnSpeakWord: document.getElementById('btnSpeakWord'),
+      btnSpeakExample: document.getElementById('btnSpeakExample'),
+      audioWaveIcon: document.getElementById('audioWaveIcon'),
+      backEnglishWord: document.getElementById('backEnglishWord'),
+      backPosBadge: document.getElementById('backPosBadge'),
+      backIpaText: document.getElementById('backIpaText'),
+      backMeaningText: document.getElementById('backMeaningText'),
+      backExampleBox: document.getElementById('backExampleBox'),
+      backExampleText: document.getElementById('backExampleText'),
+      shadowTypingContainer: document.getElementById('shadowTypingContainer'),
+      shadowGhostText: document.getElementById('shadowGhostText'),
+      typingInputShadow: document.getElementById('typingInputShadow'),
+      autoAdvanceContainer: document.getElementById('autoAdvanceContainer'),
+      autoAdvanceBar: document.getElementById('autoAdvanceBar'),
+      btnNextImmediate: document.getElementById('btnNextImmediate'),
+
+      // Modals
+      deckModal: document.getElementById('deckModal'),
+      deckModalSubtitle: document.getElementById('deckModalSubtitle'),
+      deckGridContainer: document.getElementById('deckGridContainer'),
+      btnCloseDeckModal: document.getElementById('btnCloseDeckModal'),
+      btnCloseDeckModalFooter: document.getElementById('btnCloseDeckModalFooter'),
+      btnResetAllProgress: document.getElementById('btnResetAllProgress'),
+
+      summaryModal: document.getElementById('summaryModal'),
+      summaryTitle: document.getElementById('summaryTitle'),
+      summaryWpm: document.getElementById('summaryWpm'),
+      summaryAccuracy: document.getElementById('summaryAccuracy'),
+      summaryMissedCount: document.getElementById('summaryMissedCount'),
+      summaryMissedList: document.getElementById('summaryMissedList'),
+      btnPracticeMissed: document.getElementById('btnPracticeMissed'),
+      btnReplayDeck: document.getElementById('btnReplayDeck'),
+      btnNextDeck: document.getElementById('btnNextDeck'),
+
+      toastBanner: document.getElementById('toastBanner'),
+      toastInner: document.getElementById('toastInner')
+    };
+
+    // ==================== WEB SPEECH API (NATURAL EN-US VOICE) ====================
+    let preferredVoice = null;
+
+    function loadPreferredVoice() {
+      if (!('speechSynthesis' in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return;
+      preferredVoice =
+        voices.find(v => v.lang === 'en-US' && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha'))) ||
+        voices.find(v => v.lang === 'en-US') ||
+        voices.find(v => v.lang.startsWith('en'));
+    }
+
+    if ('speechSynthesis' in window) {
+      loadPreferredVoice();
+      window.speechSynthesis.onvoiceschanged = loadPreferredVoice;
+    }
+
+    function speakText(text, rate = 0.95, onComplete = null) {
+      if (!('speechSynthesis' in window) || !text) {
+        if (onComplete) setTimeout(onComplete, 900);
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      // Normalize "a / an" so TTS pronounces naturally
+      const cleanSpeech = text.trim().toLowerCase() === 'a / an' ? 'a, or an' : text;
+
+      const utterance = new SpeechSynthesisUtterance(cleanSpeech);
+      if (preferredVoice) utterance.voice = preferredVoice;
+      utterance.lang = 'en-US';
+      utterance.rate = rate;
+      utterance.pitch = 1.0;
+
+      dom.audioWaveIcon.classList.add('speaking');
+
+      let finished = false;
+      const finishHandler = () => {
+        if (finished) return;
+        finished = true;
+        dom.audioWaveIcon.classList.remove('speaking');
+        if (onComplete) onComplete();
+      };
+
+      utterance.onend = finishHandler;
+      utterance.onerror = finishHandler;
+
+      window.speechSynthesis.speak(utterance);
+
+      // Safety fallback in case browser speechSynthesis stalls
+      const fallbackMs = Math.max(1300, cleanSpeech.length * 95);
+      setTimeout(finishHandler, fallbackMs);
+    }
+
+    // ==================== 120 FPS REQUESTANIMATIONFRAME LOOP ====================
+    let targetProgressPct = 1;
+    let currentProgressPct = 1;
+
+    function start120FpsRenderLoop() {
+      function tick(now) {
+        // Smoothly interpolate top progress bar at display refresh rate (60/120Hz)
+        const diff = targetProgressPct - currentProgressPct;
+        if (Math.abs(diff) > 0.05) {
+          currentProgressPct += diff * 0.22;
+          dom.rafProgressBar.style.width = `${currentProgressPct.toFixed(2)}%`;
+        }
+
+        // Smoothly animate auto-advance countdown bar on card back
+        if (state.autoAdvanceTimer && state.autoAdvanceStart > 0) {
+          const elapsed = now - state.autoAdvanceStart;
+          const remainingRatio = Math.max(0, 1 - elapsed / state.autoAdvanceDuration);
+          dom.autoAdvanceBar.style.width = `${(remainingRatio * 100).toFixed(2)}%`;
+        }
+
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ==================== NORMALIZATION & ANSWER MATCHING ====================
+    function normalizeWord(str) {
+      return String(str || '')
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ');
+    }
+
+    function isAnswerMatch(userInput, targetWord) {
+      const u = normalizeWord(userInput);
+      const t = normalizeWord(targetWord);
+      if (!u) return false;
+
+      // Special handling for "a / an"
+      if (t === 'a / an' || t === 'a/an') {
+        return u === 'a' || u === 'an' || u === 'a / an' || u === 'a/an';
+      }
+
+      // Allow parenthetical optional parts if present, e.g. "colour (color)"
+      if (t.includes('(')) {
+        const base = t.replace(/\s*\(.*?\)\s*/g, '').trim();
+        if (u === base) return true;
+      }
+
+      return u === t;
+    }
+
+    function getCanonicalTarget(targetWord) {
+      const t = normalizeWord(targetWord);
+      if (t === 'a / an') return 'a / an';
+      return targetWord.trim();
+    }
+
+    // ==================== DECK & PROGRESS MANAGEMENT ====================
+    function loadProgressFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_PROGRESS_KEY);
+        state.progressMap = raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        state.progressMap = {};
+      }
+    }
+
+    function saveProgressToStorage() {
+      try {
+        localStorage.setItem(STORAGE_PROGRESS_KEY, JSON.stringify(state.progressMap));
+      } catch (e) {}
+    }
+
+    function getTotalDecks() {
+      return Math.max(1, Math.ceil(VOCAB_LIST.length / DECK_SIZE));
+    }
+
+    function selectDeck(deckIdx, customWordSubset = null) {
+      clearAutoAdvance();
+      const totalDecks = getTotalDecks();
+      state.deckIndex = Math.min(Math.max(0, deckIdx), totalDecks - 1);
+
+      if (customWordSubset) {
+        state.deckWords = [...customWordSubset];
+      } else {
+        const start = state.deckIndex * DECK_SIZE;
+        const end = Math.min(start + DECK_SIZE, VOCAB_LIST.length);
+        state.deckWords = VOCAB_LIST.slice(start, end);
+      }
+
+      state.currentIndex = 0;
+      state.missedInSession = [];
+      state.correctCount = 0;
+      state.totalTypedChars = 0;
+      state.sessionStartTime = Date.now();
+
+      updateHeaderInfo(!!customWordSubset);
+      loadCurrentCard(true);
+    }
+
+    function updateHeaderInfo(isReviewSubset = false) {
+      const startNum = state.deckIndex * DECK_SIZE + 1;
+      const endNum = Math.min((state.deckIndex + 1) * DECK_SIZE, VOCAB_LIST.length);
+
+      if (isReviewSubset) {
+        dom.headerDeckTitle.textContent = `Ôn từ sai (${state.deckWords.length} từ)`;
+      } else {
+        dom.headerDeckTitle.textContent = `Bộ ${state.deckIndex + 1} (${startNum} – ${endNum})`;
+      }
+
+      const prog = state.progressMap[state.deckIndex];
+      const pct = prog && prog.total > 0 ? Math.round((prog.completed / prog.total) * 100) : 0;
+      dom.headerDeckBadge.textContent = `${pct}%`;
+      dom.headerSourceLabel.textContent = `${SOURCE_NAME} • ${VOCAB_LIST.length.toLocaleString()} từ`;
+    }
+
+    // ==================== CARD RENDERING & FLIP TRANSITIONS ====================
+    function loadCurrentCard(instantReset = false) {
+      clearAutoAdvance();
+
+      if (state.currentIndex >= state.deckWords.length) {
+        openSummaryModal();
+        return;
+      }
+
+      const item = state.deckWords[state.currentIndex];
+      const [word, ipa, pos, meaning, example] = item;
+
+      state.attemptsLeft = 3;
+      state.isFlipped = false;
+      state.isShadowMode = false;
+
+      // Snap card back to front without animation if transitioning between cards
+      if (instantReset) {
+        dom.flashcard3D.classList.add('no-transition');
+        dom.flashcard3D.classList.remove('is-flipped');
+        // Force reflow
+        void dom.flashcard3D.offsetWidth;
+        dom.flashcard3D.classList.remove('no-transition');
+      } else {
+        dom.flashcard3D.classList.remove('is-flipped');
+      }
+
+      // Update Front Face
+      const totalInDeck = state.deckWords.length;
+      dom.frontIndexPill.textContent = `#${state.currentIndex + 1} / ${totalInDeck}`;
+      dom.frontPosBadge.textContent = pos || 'word';
+      dom.frontPosBadge.style.display = pos ? 'inline-block' : 'none';
+
+      // Adjust Vietnamese font class dynamically for extra long meanings
+      dom.frontMeaningText.textContent = meaning || '(Chưa có nghĩa)';
+      if ((meaning || '').length > 55) {
+        dom.frontMeaningText.className = 'fluid-vi-meaning-long font-serif font-bold text-navy-900 break-words max-w-full';
+      } else {
+        dom.frontMeaningText.className = 'fluid-vi-meaning font-serif font-bold text-navy-900 break-words max-w-full';
+      }
+
+      const cleanLen = word.trim().toLowerCase() === 'a / an' ? '1–2' : word.trim().length;
+      dom.frontLetterCount.textContent = `${cleanLen} ký tự`;
+
+      updateAttemptDots();
+      dom.typingInputFront.value = '';
+      dom.frontLiveFeedback.innerHTML = '';
+      dom.frontStatusMessage.innerHTML = 'Nhấn <kbd class="px-1.5 py-0.5 bg-paper-200 rounded text-navy-800 font-mono text-[10px]">Enter</kbd> để kiểm tra • Gõ sai 3 lần sẽ lật thẻ gợi ý';
+
+      // Pre-populate Back Face (so 3D flip is already ready at 120fps)
+      dom.backEnglishWord.textContent = word;
+      dom.backPosBadge.textContent = pos || '';
+      dom.backIpaText.textContent = ipa || '';
+      dom.backIpaText.style.display = ipa ? 'block' : 'none';
+      dom.backMeaningText.textContent = meaning || '';
+
+      if (example && example.trim()) {
+        dom.backExampleBox.classList.remove('hidden');
+        dom.backExampleText.textContent = `"${example.trim()}"`;
+      } else {
+        dom.backExampleBox.classList.add('hidden');
+      }
+
+      // Update Progress & Stats
+      targetProgressPct = ((state.currentIndex + 1) / totalInDeck) * 100;
+      dom.progressCounter.textContent = `${state.currentIndex + 1} / ${totalInDeck}`;
+      updateLiveStats();
+
+      // Focus front input smoothly
+      requestAnimationFrame(() => {
+        dom.typingInputFront.focus({ preventScroll: true });
+      });
+    }
+
+    function updateAttemptDots() {
+      dom.attemptDots.forEach((dot, idx) => {
+        if (idx < state.attemptsLeft) {
+          dot.classList.remove('bg-slate-300', 'scale-75');
+          dot.classList.add('bg-terracotta-500', 'scale-100');
+        } else {
+          dot.classList.remove('bg-terracotta-500', 'scale-100');
+          dot.classList.add('bg-slate-300', 'scale-75');
+        }
+      });
+    }
+
+    function updateLiveStats() {
+      const attempted = state.currentIndex;
+      const acc = attempted === 0 ? 100 : Math.round((state.correctCount / attempted) * 100);
+      dom.statsAccuracy.textContent = `Chính xác: ${acc}%`;
+
+      const elapsedMin = Math.max((Date.now() - state.sessionStartTime) / 60000, 0.05);
+      const wpm = Math.round((state.totalTypedChars / 5) / elapsedMin);
+      dom.statsWpm.textContent = `${Math.min(wpm, 220)} WPM`;
+    }
+
+    // ==================== REAL-TIME CHARACTER FEEDBACK ====================
+    function renderLiveCharDiff(typed, targetWord) {
+      if (!typed) {
+        dom.frontLiveFeedback.innerHTML = '';
+        return;
+      }
+
+      const target = targetWord.trim().toLowerCase() === 'a / an'
+        ? (typed.trim().toLowerCase().startsWith('an') ? 'an' : 'a')
+        : targetWord.trim();
+
+      let html = '';
+      for (let i = 0; i < typed.length; i++) {
+        const ch = typed[i];
+        const expected = target[i];
+        const displayCh = ch === ' ' ? '␣' : escapeHtml(ch);
+        if (expected && ch.toLowerCase() === expected.toLowerCase()) {
+          html += `<span class="text-sage-600">${displayCh}</span>`;
+        } else {
+          html += `<span class="text-rose-600 underline decoration-2">${displayCh}</span>`;
+        }
+      }
+      dom.frontLiveFeedback.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // ==================== ANSWER VERIFICATION & 3-MISTAKE FLIP LOGIC ====================
+    function handleFrontTypingInput() {
+      const item = state.deckWords[state.currentIndex];
+      if (!item || state.isFlipped) return;
+
+      const targetWord = item[0];
+      const val = dom.typingInputFront.value;
+
+      renderLiveCharDiff(val, targetWord);
+
+      // Auto-Match: if enabled and typed string matches the full word accurately
+      if (state.autoMatch && isAnswerMatch(val, targetWord)) {
+        // Avoid premature auto-match on "a" if the user is typing a longer word?
+        // Here targetWord itself is "a / an", so "a" is valid!
+        onCorrectFrontAnswer();
+      }
+    }
+
+    function submitFrontAnswer() {
+      const item = state.deckWords[state.currentIndex];
+      if (!item || state.isFlipped) return;
+
+      const targetWord = item[0];
+      const val = dom.typingInputFront.value;
+
+      if (!val.trim()) {
+        triggerCardShake();
+        return;
+      }
+
+      if (isAnswerMatch(val, targetWord)) {
+        onCorrectFrontAnswer();
+      } else {
+        onWrongFrontAnswer();
+      }
+    }
+
+    function onCorrectFrontAnswer() {
+      const item = state.deckWords[state.currentIndex];
+      const [word] = item;
+
+      state.isFlipped = true;
+      state.isShadowMode = false;
+      state.correctCount++;
+      state.totalTypedChars += word.length;
+
+      // Record deck progress
+      recordWordCompleted();
+
+      // Configure Back Face for Celebratory Reveal & Auto-Advance
+      dom.backModeBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sage-500/20 text-emerald-300 border border-emerald-400/30';
+      dom.backModeBadge.innerHTML = `
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Chính xác! Đang phát âm...</span>
+      `;
+      dom.shadowTypingContainer.classList.add('hidden');
+      dom.autoAdvanceContainer.classList.remove('hidden');
+
+      // Flip card 180deg via GPU
+      dom.flashcard3D.classList.add('is-flipped');
+
+      // Speak English word automatically and advance after speech + brief pause
+      let speechDone = false;
+      let timerDone = false;
+
+      const tryAdvance = () => {
+        if (speechDone && timerDone && state.isFlipped && !state.isShadowMode) {
+          advanceToNextCard();
+        }
+      };
+
+      speakText(word, 0.95, () => {
+        speechDone = true;
+        tryAdvance();
+      });
+
+      state.autoAdvanceDuration = 1350;
+      state.autoAdvanceStart = performance.now();
+      state.autoAdvanceTimer = setTimeout(() => {
+        timerDone = true;
+        tryAdvance();
+      }, state.autoAdvanceDuration);
+    }
+
+    function onWrongFrontAnswer() {
+      state.attemptsLeft = Math.max(0, state.attemptsLeft - 1);
+      updateAttemptDots();
+      triggerCardShake();
+
+      if (state.attemptsLeft > 0) {
+        dom.frontStatusMessage.innerHTML = `<span class="text-rose-600 font-bold">Chưa chính xác!</span> Còn <span class="font-mono font-bold text-navy-900">${state.attemptsLeft}</span> lần thử nữa.`;
+        dom.typingInputFront.select();
+      } else {
+        // 3 MISTAKES REACHED -> FLIP CARD TO BACK FOR SHADOW TYPING!
+        enterShadowTypingMode();
+      }
+    }
+
+    function enterShadowTypingMode() {
+      const item = state.deckWords[state.currentIndex];
+      const [word] = item;
+
+      state.isFlipped = true;
+      state.isShadowMode = true;
+
+      // Track word in missed list if not already added
+      if (!state.missedInSession.some(w => w[0] === word)) {
+        state.missedInSession.push(item);
+      }
+
+      // Configure Back Face for Shadow Typing
+      dom.backModeBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-terracotta-500/25 text-amber-300 border border-terracotta-500/50';
+      dom.backModeBadge.innerHTML = `
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+        <span>Sai 3 lần • Gõ theo đáp án bên dưới</span>
+      `;
+
+      dom.autoAdvanceContainer.classList.add('hidden');
+      dom.shadowTypingContainer.classList.remove('hidden');
+
+      const displayTarget = getCanonicalTarget(word);
+      dom.shadowGhostText.textContent = displayTarget;
+      dom.typingInputShadow.value = '';
+
+      // Flip card 180deg to reveal English word + IPA + Shadow Input
+      dom.flashcard3D.classList.add('is-flipped');
+
+      // Pronounce word so learner hears it while typing along
+      speakText(word, 0.9);
+
+      setTimeout(() => {
+        dom.typingInputShadow.focus({ preventScroll: true });
+      }, 180);
+    }
+
+    function handleShadowTypingInput() {
+      if (!state.isFlipped || !state.isShadowMode) return;
+      const item = state.deckWords[state.currentIndex];
+      const [word] = item;
+      const typed = dom.typingInputShadow.value;
+      const ghostTarget = getCanonicalTarget(word);
+
+      // Update ghost overlay so already-typed prefix doesn't clash visually
+      if (typed.length <= ghostTarget.length) {
+        const remainingGhost = '\u00A0'.repeat(typed.length) + ghostTarget.slice(typed.length);
+        dom.shadowGhostText.textContent = remainingGhost;
+      } else {
+        dom.shadowGhostText.textContent = '';
+      }
+
+      // Check if user finished typing the shadow word properly
+      if (isAnswerMatch(typed, word)) {
+        state.isShadowMode = false;
+        state.totalTypedChars += word.length;
+        recordWordCompleted();
+
+        dom.shadowTypingContainer.classList.add('hidden');
+        dom.autoAdvanceContainer.classList.remove('hidden');
+        dom.backModeBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sage-500/20 text-emerald-300 border border-emerald-400/30';
+        dom.backModeBadge.innerHTML = `<span>Đã ghi nhớ! Chuyển từ tiếp theo...</span>`;
+
+        speakText(word, 0.95, () => {
+          setTimeout(() => advanceToNextCard(), 350);
+        });
+      }
+    }
+
+    function recordWordCompleted() {
+      const completedSoFar = state.currentIndex + 1;
+      const total = state.deckWords.length;
+      const prev = state.progressMap[state.deckIndex] || { completed: 0, total };
+      state.progressMap[state.deckIndex] = {
+        completed: Math.max(prev.completed, completedSoFar),
+        total
+      };
+      saveProgressToStorage();
+      updateHeaderInfo();
+    }
+
+    function advanceToNextCard() {
+      clearAutoAdvance();
+      state.currentIndex++;
+      loadCurrentCard(true);
+    }
+
+    function clearAutoAdvance() {
+      if (state.autoAdvanceTimer) {
+        clearTimeout(state.autoAdvanceTimer);
+        state.autoAdvanceTimer = null;
+      }
+      state.autoAdvanceStart = 0;
+    }
+
+    function triggerCardShake() {
+      dom.cardShakeWrapper.classList.remove('shake-gpu');
+      void dom.cardShakeWrapper.offsetWidth;
+      dom.cardShakeWrapper.classList.add('shake-gpu');
+    }
+
+    // ==================== SHUFFLE & PEEK HELPERS ====================
+    function shuffleCurrentDeck() {
+      for (let i = state.deckWords.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [state.deckWords[i], state.deckWords[j]] = [state.deckWords[j], state.deckWords[i]];
+      }
+      state.currentIndex = 0;
+      state.missedInSession = [];
+      state.correctCount = 0;
+      state.sessionStartTime = Date.now();
+      loadCurrentCard(true);
+      showToast("Đã xáo trộn ngẫu nhiên các từ trong bộ!");
+    }
+
+    function peekFirstLetter() {
+      const item = state.deckWords[state.currentIndex];
+      if (!item || state.isFlipped) return;
+      const word = item[0].trim();
+      const firstChar = word.toLowerCase() === 'a / an' ? 'a' : word[0];
+      dom.typingInputFront.value = firstChar;
+      dom.typingInputFront.focus();
+      renderLiveCharDiff(firstChar, word);
+    }
+
+    // ==================== EXCEL / CSV / JSON FILE IMPORTER (SHEETJS) ====================
+    function handleFileUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      const ext = file.name.split('.').pop().toLowerCase();
+
+      reader.onload = function (e) {
+        try {
+          let parsedVocab = [];
+
+          if (ext === 'json') {
+            const rawJson = JSON.parse(e.target.result);
+            if (Array.isArray(rawJson)) {
+              parsedVocab = rawJson.map(row => {
+                if (Array.isArray(row)) {
+                  return [
+                    String(row[0] || '').trim(),
+                    String(row[1] || '').trim(),
+                    String(row[2] || '').trim(),
+                    String(row[3] || '').trim(),
+                    String(row[4] || '').trim()
+                  ];
+                } else if (typeof row === 'object' && row !== null) {
+                  return normalizeObjectRow(row);
+                }
+                return null;
+              }).filter(r => r && r[0] && r[3]);
+            }
+          } else {
+            // Parse Excel (.xlsx, .xls) or .csv via SheetJS
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
+
+            parsedVocab = rows
+              .map(normalizeObjectRow)
+              .filter(r => r && r[0] && r[3]);
+          }
+
+          if (parsedVocab.length === 0) {
+            showToast("Không tìm thấy cột từ vựng & nghĩa tiếng Việt hợp lệ!");
+            return;
+          }
+
+          VOCAB_LIST = parsedVocab;
+          SOURCE_NAME = file.name.replace(/\.[^/.]+$/, "");
+          saveCustomDatasetToCache(VOCAB_LIST, SOURCE_NAME);
+
+          // Reset progress for newly uploaded file
+          state.progressMap = {};
+          saveProgressToStorage();
+
+          initDecksAndRender(true);
+          showToast(`Đã nạp thành công ${VOCAB_LIST.length.toLocaleString()} từ từ "${file.name}"!`);
+        } catch (err) {
+          console.error(err);
+          showToast("Lỗi đọc tệp. Vui lòng kiểm tra định dạng Excel/CSV/JSON.");
+        } finally {
+          event.target.value = '';
+        }
+      };
+
+      if (ext === 'json') {
+        reader.readAsText(file);
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
+    }
+
+    function normalizeObjectRow(row) {
+      const keys = Object.keys(row);
+      const findVal = (patterns) => {
+        const key = keys.find(k => patterns.some(p => k.toLowerCase().trim().includes(p)));
+        return key ? String(row[key] ?? '').trim() : '';
+      };
+
+      const word = findVal(['word', 'vocabulary', 'english', 'từ vựng', 'tu vung', 'term']) || String(Object.values(row)[0] || '').trim();
+      const ipa = findVal(['ipa', 'phonetic', 'pronunciation', 'phiên âm', 'phien am']);
+      const pos = findVal(['pos', 'part of speech', 'type', 'từ loại', 'tu loai', 'loại từ']);
+      const meaning = findVal(['meaning', 'vietnamese', 'nghĩa', 'nghia', 'tiếng việt', 'translation']) || String(Object.values(row)[1] || '').trim();
+      const example = findVal(['example', 'sentence', 'ví dụ', 'vi du', 'context']);
+
+      return [word, ipa, pos, meaning, example];
+    }
+
+    // ==================== MODALS: DECK SELECTOR & SUMMARY ====================
+    function openDeckModal() {
+      const totalDecks = getTotalDecks();
+      dom.deckModalSubtitle.textContent = `Tổng cộng ${VOCAB_LIST.length.toLocaleString()} từ chia thành ${totalDecks} bộ (100 từ/bộ)`;
+      dom.deckGridContainer.innerHTML = '';
+
+      for (let i = 0; i < totalDecks; i++) {
+        const start = i * DECK_SIZE + 1;
+        const end = Math.min((i + 1) * DECK_SIZE, VOCAB_LIST.length);
+        const count = end - start + 1;
+        const prog = state.progressMap[i];
+        const completed = prog ? Math.min(prog.completed, count) : 0;
+        const pct = Math.round((completed / count) * 100);
+        const isActive = i === state.deckIndex;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `text-left p-3 rounded-2xl border transition-all active:scale-95 ${
+          isActive
+            ? 'bg-navy-900 text-paper-50 border-navy-900 shadow-md'
+            : 'bg-white hover:bg-paper-100 text-navy-900 border-paper-200'
+        }`;
+
+        btn.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-xs sm:text-sm">Bộ ${i + 1}</span>
+            <span class="font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${
+              pct === 100
+                ? 'bg-sage-500 text-white'
+                : isActive
+                  ? 'bg-white/15 text-amber-300'
+                  : 'bg-paper-200 text-slate-600'
+            }">${pct}%</span>
+          </div>
+          <div class="text-[11px] ${isActive ? 'text-paper-200' : 'text-slate-500'} font-mono">
+            Từ ${start} – ${end}
+          </div>
+          <div class="w-full h-1.5 rounded-full overflow-hidden mt-2 ${isActive ? 'bg-white/15' : 'bg-paper-200'}">
+            <div class="h-full bg-terracotta-500 rounded-full" style="width: ${pct}%"></div>
+          </div>
+        `;
+
+        btn.addEventListener('click', () => {
+          selectDeck(i);
+          closeDeckModal();
+        });
+
+        dom.deckGridContainer.appendChild(btn);
+      }
+
+      dom.deckModal.classList.remove('hidden');
+      dom.deckModal.classList.add('flex');
+    }
+
+    function closeDeckModal() {
+      dom.deckModal.classList.add('hidden');
+      dom.deckModal.classList.remove('flex');
+      focusActiveInput();
+    }
+
+    function openSummaryModal() {
+      const total = state.deckWords.length;
+      const acc = total === 0 ? 100 : Math.round((state.correctCount / total) * 100);
+      const elapsedMin = Math.max((Date.now() - state.sessionStartTime) / 60000, 0.1);
+      const wpm = Math.min(Math.round((state.totalTypedChars / 5) / elapsedMin), 220);
+
+      dom.summaryTitle.textContent = `Hoàn thành Bộ ${state.deckIndex + 1}!`;
+      dom.summaryWpm.textContent = `${wpm} WPM`;
+      dom.summaryAccuracy.textContent = `${acc}%`;
+      dom.summaryMissedCount.textContent = `${state.missedInSession.length} từ`;
+
+      dom.summaryMissedList.innerHTML = '';
+      if (state.missedInSession.length === 0) {
+        dom.btnPracticeMissed.classList.add('hidden');
+        dom.summaryMissedList.innerHTML = `
+          <div class="p-4 rounded-2xl bg-sage-100/70 border border-sage-500/20 text-center text-xs sm:text-sm text-sage-600 font-semibold">
+            Tuyệt vời! Bạn không bị sai quá 3 lần ở bất kỳ từ nào trong bộ này.
+          </div>
+        `;
+      } else {
+        dom.btnPracticeMissed.classList.remove('hidden');
+        state.missedInSession.forEach(([word, ipa, pos, meaning]) => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between gap-3 p-2.5 rounded-xl bg-white border border-paper-200';
+          row.innerHTML = `
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-bold text-sm text-navy-900">${escapeHtml(word)}</span>
+                <span class="font-mono text-xs text-slate-400">${escapeHtml(ipa || '')}</span>
+                <span class="font-serif italic text-xs text-terracotta-600">${escapeHtml(pos || '')}</span>
+              </div>
+              <p class="text-xs text-slate-600 truncate">${escapeHtml(meaning || '')}</p>
+            </div>
+            <button type="button" class="p-2 rounded-lg bg-paper-100 hover:bg-paper-200 text-navy-800 shrink-0" title="Nghe phát âm">
+              🔊
+            </button>
+          `;
+          row.querySelector('button').addEventListener('click', () => speakText(word));
+          dom.summaryMissedList.appendChild(row);
+        });
+      }
+
+      dom.summaryModal.classList.remove('hidden');
+      dom.summaryModal.classList.add('flex');
+    }
+
+    function closeSummaryModal() {
+      dom.summaryModal.classList.add('hidden');
+      dom.summaryModal.classList.remove('flex');
+    }
+
+    // ==================== TOAST HELPER ====================
+    let toastTimeout = null;
+    function showToast(msg) {
+      dom.toastInner.textContent = msg;
+      dom.toastBanner.classList.remove('opacity-0');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        dom.toastBanner.classList.add('opacity-0');
+      }, 2800);
+    }
+
+    function focusActiveInput() {
+      if (state.isFlipped && state.isShadowMode) {
+        dom.typingInputShadow.focus({ preventScroll: true });
+      } else if (!state.isFlipped) {
+        dom.typingInputFront.focus({ preventScroll: true });
+      }
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    function bindEvents() {
+      // Typing inputs
+      dom.typingInputFront.addEventListener('input', handleFrontTypingInput);
+      dom.typingInputFront.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitFrontAnswer();
+        } else if (e.key === 'Tab') {
+          e.preventDefault();
+          peekFirstLetter();
+        }
+      });
+
+      dom.btnSubmitFront.addEventListener('click', submitFrontAnswer);
+      dom.btnPeekFirstLetter.addEventListener('click', peekFirstLetter);
+
+      // Shadow typing input
+      dom.typingInputShadow.addEventListener('input', handleShadowTypingInput);
+      dom.typingInputShadow.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleShadowTypingInput();
+        }
+      });
+
+      // Global shortcuts (Ctrl = replay word, Alt = speak example)
+      window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+          const item = state.deckWords[state.currentIndex];
+          if (item && state.isFlipped) {
+            e.preventDefault();
+            speakText(item[0]);
+          }
+        } else if (e.altKey && !e.ctrlKey && !e.metaKey) {
+          const item = state.deckWords[state.currentIndex];
+          if (item && state.isFlipped && item[4]) {
+            e.preventDefault();
+            speakText(item[4], 0.92);
+          }
+        }
+      });
+
+      // Audio buttons on card back
+      dom.btnSpeakWord.addEventListener('click', () => {
+        const item = state.deckWords[state.currentIndex];
+        if (item) speakText(item[0]);
+        focusActiveInput();
+      });
+
+      dom.btnSpeakExample.addEventListener('click', () => {
+        const item = state.deckWords[state.currentIndex];
+        if (item && item[4]) speakText(item[4], 0.92);
+        focusActiveInput();
+      });
+
+      dom.btnNextImmediate.addEventListener('click', advanceToNextCard);
+
+      dom.btnSkipWord.addEventListener('click', () => {
+        const item = state.deckWords[state.currentIndex];
+        if (item && !state.missedInSession.some(w => w[0] === item[0])) {
+          state.missedInSession.push(item);
+        }
+        advanceToNextCard();
+      });
+
+      // Top bar controls
+      dom.btnToggleAutoMatch.addEventListener('click', () => {
+        state.autoMatch = !state.autoMatch;
+        if (state.autoMatch) {
+          dom.btnToggleAutoMatch.className = 'flex items-center gap-1.5 px-2.5 py-2 sm:px-3 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-sage-100 border-sage-500/30 text-sage-600';
+          dom.autoMatchDot.className = 'w-2 h-2 rounded-full bg-sage-500';
+          showToast("Đã bật chế độ Tự khớp ngay khi gõ đúng");
+        } else {
+          dom.btnToggleAutoMatch.className = 'flex items-center gap-1.5 px-2.5 py-2 sm:px-3 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-paper-50 border-paper-300 text-slate-600';
+          dom.autoMatchDot.className = 'w-2 h-2 rounded-full bg-slate-400';
+          showToast("Đã tắt Tự khớp — Nhấn Enter để kiểm tra");
+        }
+        focusActiveInput();
+      });
+
+      dom.btnShuffle.addEventListener('click', shuffleCurrentDeck);
+      dom.fileImportInput.addEventListener('change', handleFileUpload);
+
+      // Deck Modal
+      dom.btnOpenDeckModal.addEventListener('click', openDeckModal);
+      dom.btnCloseDeckModal.addEventListener('click', closeDeckModal);
+      dom.btnCloseDeckModalFooter.addEventListener('click', closeDeckModal);
+      dom.deckModal.addEventListener('click', (e) => {
+        if (e.target === dom.deckModal) closeDeckModal();
+      });
+
+      dom.btnResetAllProgress.addEventListener('click', () => {
+        state.progressMap = {};
+        saveProgressToStorage();
+        openDeckModal();
+        updateHeaderInfo();
+        showToast("Đã đặt lại toàn bộ tiến độ học tập");
+      });
+
+      // Summary Modal Actions
+      dom.btnPracticeMissed.addEventListener('click', () => {
+        const missedCopy = [...state.missedInSession];
+        closeSummaryModal();
+        selectDeck(state.deckIndex, missedCopy);
+      });
+
+      dom.btnReplayDeck.addEventListener('click', () => {
+        closeSummaryModal();
+        selectDeck(state.deckIndex);
+      });
+
+      dom.btnNextDeck.addEventListener('click', () => {
+        closeSummaryModal();
+        const nextIdx = (state.deckIndex + 1) % getTotalDecks();
+        selectDeck(nextIdx);
+      });
+    }
+
+    // ==================== INITIALIZATION ====================
+    function initDecksAndRender(resetToFirst = false) {
+      loadProgressFromStorage();
+      selectDeck(resetToFirst ? 0 : state.deckIndex);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      bindEvents();
+      start120FpsRenderLoop();
+      initDecksAndRender(true);
+      tryAutoLoadCompactJson();
+    });
+  </script>
+</body>
+</html>
+```
