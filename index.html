@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Oxford 3000 Typing Flashcard — Học & Gõ Từ Vựng Chuẩn</title>
+  <title>Oxford 3000 Typing Flashcard — Lưu Trữ Vĩnh Viễn & Luyện Gõ 120FPS</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- SheetJS for .xlsx / .csv / .json file parsing -->
+  <!-- SheetJS for .xlsx / .xls / .csv parsing -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono & Newsreader -->
+  <!-- Scholarly Fonts: Plus Jakarta Sans, Newsreader & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,10 +25,10 @@
           },
           colors: {
             paper: {
-              50: '#FDFBF7',
-              100: '#F7F3EB',
-              200: '#EDE5D5',
-              300: '#DFD2BA',
+              50: '#FAF8F5',
+              100: '#F4F0E8',
+              200: '#E8E0D2',
+              300: '#D8CCB8',
             },
             navy: {
               800: '#1E293B',
@@ -36,14 +36,19 @@
               950: '#090E1A',
             },
             terracotta: {
-              500: '#D95D39',
-              600: '#C24926',
-              100: '#FCECE7',
+              500: '#D97706',
+              600: '#B45309',
+              100: '#FEF3C7',
             },
             sage: {
-              500: '#2E7D5B',
-              600: '#236347',
-              100: '#E5F3EC',
+              500: '#059669',
+              600: '#047857',
+              100: '#D1FAE5',
+            },
+            crimson: {
+              500: '#DC2626',
+              600: '#B91C1C',
+              100: '#FEE2E2',
             }
           }
         }
@@ -52,30 +57,30 @@
   </script>
 
   <style>
-    /* Lock viewport to exact 100dvh, zero vertical or horizontal scroll */
+    /* Zero-scroll locked viewport (100dvh) */
     html, body {
       height: 100dvh;
       width: 100vw;
       overflow: hidden;
       margin: 0;
       padding: 0;
-      background-color: #F7F3EB;
-      color: #0F172A;
+      background-color: #FAF8F5;
+      color: #1E293B;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
 
-    /* Subtle warm academic paper texture */
+    /* Warm scholarly paper texture */
     .bg-study-paper {
-      background-color: #F7F3EB;
+      background-color: #FAF8F5;
       background-image:
-        radial-gradient(at 15% 15%, rgba(217, 93, 57, 0.06) 0px, transparent 50%),
-        radial-gradient(at 85% 85%, rgba(15, 23, 42, 0.06) 0px, transparent 50%);
+        radial-gradient(at 12% 14%, rgba(217, 119, 6, 0.065) 0px, transparent 48%),
+        radial-gradient(at 88% 86%, rgba(30, 41, 59, 0.06) 0px, transparent 50%);
     }
 
     /* 120 FPS GPU-Accelerated 3D Flip Container */
     .scene-3d {
-      perspective: 1400px;
+      perspective: 1200px;
       transform-style: preserve-3d;
     }
 
@@ -85,14 +90,13 @@
       height: 100%;
       transform-style: preserve-3d;
       will-change: transform;
-      transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 0.44s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .card-3d.is-flipped {
       transform: rotateY(180deg);
     }
 
-    /* Instant snap without transition when advancing to next card */
     .card-3d.no-transition {
       transition: none !important;
     }
@@ -104,15 +108,15 @@
       height: 100%;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      transform: translateZ(0);
+      transform: translate3d(0, 0, 0);
       will-change: transform, opacity;
     }
 
     .card-back {
-      transform: rotateY(180deg) translateZ(0);
+      transform: rotateY(180deg) translate3d(0, 0, 0);
     }
 
-    /* GPU-only Shake Animation on Mistake */
+    /* GPU-only Shake Animation */
     @keyframes gpuShake {
       0%, 100% { transform: translate3d(0, 0, 0); }
       18% { transform: translate3d(-10px, 0, 0); }
@@ -123,190 +127,222 @@
     }
 
     .shake-gpu {
-      animation: gpuShake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      animation: gpuShake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
       will-change: transform;
     }
 
     /* Fluid Responsive Typography via clamp() */
     .fluid-vi-meaning {
-      font-size: clamp(1.25rem, 3.2vw + 0.5rem, 2.35rem);
-      line-height: 1.28;
+      font-size: clamp(1.3rem, 3.2vw + 0.45rem, 2.35rem);
+      line-height: 1.25;
     }
 
     .fluid-vi-meaning-long {
-      font-size: clamp(1.05rem, 2.2vw + 0.45rem, 1.75rem);
-      line-height: 1.32;
+      font-size: clamp(1.05rem, 2.1vw + 0.45rem, 1.7rem);
+      line-height: 1.3;
     }
 
     .fluid-en-word {
-      font-size: clamp(1.65rem, 4.2vw + 0.6rem, 3rem);
+      font-size: clamp(1.65rem, 4.2vw + 0.55rem, 2.95rem);
       line-height: 1.15;
     }
 
     .fluid-ipa {
-      font-size: clamp(0.95rem, 1.5vw + 0.4rem, 1.25rem);
+      font-size: clamp(0.95rem, 1.4vw + 0.4rem, 1.25rem);
     }
 
     .fluid-example {
-      font-size: clamp(0.85rem, 1.2vw + 0.35rem, 1.08rem);
-      line-height: 1.45;
+      font-size: clamp(0.84rem, 1.15vw + 0.35rem, 1.05rem);
+      line-height: 1.42;
     }
 
     .fluid-input {
-      font-size: clamp(1.25rem, 2.8vw + 0.45rem, 2rem);
+      font-size: clamp(1.2rem, 2.6vw + 0.45rem, 1.95rem);
       letter-spacing: 0.04em;
     }
 
-    /* Custom subtle scrollbar only inside modal deck grid */
-    .deck-scroll::-webkit-scrollbar {
+    /* Custom subtle scrollbar only inside modal lists */
+    .modal-scroll::-webkit-scrollbar {
       width: 6px;
     }
-    .deck-scroll::-webkit-scrollbar-track {
+    .modal-scroll::-webkit-scrollbar-track {
       background: transparent;
     }
-    .deck-scroll::-webkit-scrollbar-thumb {
-      background: rgba(15, 23, 42, 0.18);
+    .modal-scroll::-webkit-scrollbar-thumb {
+      background: rgba(30, 41, 59, 0.2);
       border-radius: 9999px;
     }
 
-    /* Soundwave pulse animation */
+    /* Audio wave animation */
     @keyframes wavePulse {
-      0%, 100% { transform: scaleY(0.4); }
+      0%, 100% { transform: scaleY(0.35); }
       50% { transform: scaleY(1); }
     }
-    .speaking .wave-bar:nth-child(1) { animation: wavePulse 0.6s ease-in-out infinite 0.0s; }
-    .speaking .wave-bar:nth-child(2) { animation: wavePulse 0.6s ease-in-out infinite 0.15s; }
-    .speaking .wave-bar:nth-child(3) { animation: wavePulse 0.6s ease-in-out infinite 0.3s; }
-    .speaking .wave-bar:nth-child(4) { animation: wavePulse 0.6s ease-in-out infinite 0.45s; }
+    .speaking .wave-bar:nth-child(1) { animation: wavePulse 0.55s ease-in-out infinite 0.0s; }
+    .speaking .wave-bar:nth-child(2) { animation: wavePulse 0.55s ease-in-out infinite 0.14s; }
+    .speaking .wave-bar:nth-child(3) { animation: wavePulse 0.55s ease-in-out infinite 0.28s; }
+    .speaking .wave-bar:nth-child(4) { animation: wavePulse 0.55s ease-in-out infinite 0.42s; }
   </style>
 </head>
 <body class="bg-study-paper font-sans antialiased flex flex-col justify-between h-[100dvh] w-screen overflow-hidden">
 
-  <!-- TOP COMPACT STUDY BAR -->
-  <header class="w-full max-w-4xl mx-auto px-3 sm:px-6 pt-2.5 sm:pt-4 pb-1.5 flex items-center justify-between gap-2 shrink-0 z-20">
-    <!-- Brand & Active Deck Selector Trigger -->
-    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-navy-900 text-paper-50 flex items-center justify-center shadow-sm shrink-0">
+  <!-- ==================== TOP COMPACT STUDY & PERMANENT STORAGE BAR ==================== -->
+  <header class="w-full max-w-5xl mx-auto px-3 sm:px-5 pt-2.5 sm:pt-3.5 pb-1.5 flex flex-wrap items-center justify-between gap-2 shrink-0 z-20">
+    <!-- Left: Title + Permanent Storage Status + Set Selector -->
+    <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+      <div class="w-9 h-9 rounded-xl bg-navy-800 text-paper-50 flex items-center justify-center shadow-xs shrink-0">
         <svg class="w-5 h-5 text-terracotta-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </div>
 
-      <button id="btnOpenDeckModal" type="button"
-        class="group flex items-center gap-2 bg-paper-50 hover:bg-white border border-paper-300/90 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-xs transition-transform active:scale-95 min-w-0">
-        <div class="text-left truncate">
-          <div class="flex items-center gap-1.5">
-            <span id="headerDeckTitle" class="font-bold text-navy-900 text-xs sm:text-sm truncate">Bộ 1 (1 – 100)</span>
-            <span id="headerDeckBadge" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-terracotta-100 text-terracotta-600">0%</span>
-          </div>
-          <p id="headerSourceLabel" class="text-[10px] sm:text-[11px] text-slate-500 truncate">Oxford 3000 • 3.361 từ</p>
+      <div class="min-w-0">
+        <div class="flex items-center gap-1.5">
+          <span class="font-extrabold text-navy-900 text-xs sm:text-sm tracking-tight truncate">Oxford 3000 Flashcard</span>
+          <!-- Storage Status Pill -->
+          <span id="storageStatusBadge" class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-paper-200/80 text-navy-800 truncate max-w-[190px] sm:max-w-[270px]">
+            <span id="storageStatusDot" class="w-1.5 h-1.5 rounded-full bg-sage-500 shrink-0"></span>
+            <span id="storageStatusText" class="truncate">Dữ liệu mặc định (Oxford 3000)</span>
+          </span>
         </div>
-        <svg class="w-4 h-4 text-slate-400 group-hover:text-navy-900 shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+
+        <!-- Set Selector Dropdown + Modal Trigger -->
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <select id="deckSelectDropdown" aria-label="Chọn bộ 100 từ"
+            class="bg-white border border-paper-300 text-navy-900 font-bold text-xs rounded-lg px-2 py-0.5 focus:outline-none focus:border-navy-800 cursor-pointer">
+            <option value="0">Bộ 1 (1 – 100)</option>
+          </select>
+          <button id="btnOpenDeckModal" type="button" class="text-[11px] font-semibold text-terracotta-600 hover:underline">
+            Tất cả bộ
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Action Controls: Auto-Match Toggle, Shuffle, Import Excel -->
-    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-      <!-- Auto-Match Mode Toggle -->
-      <button id="btnToggleAutoMatch" type="button" title="Tự động khớp ngay khi gõ đủ chữ đúng (không cần nhấn Enter)"
-        class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-sage-100 border-sage-500/30 text-sage-600">
-        <span id="autoMatchDot" class="w-2 h-2 rounded-full bg-sage-500"></span>
+    <!-- Right: Action Buttons (Shuffle, Review Missed, Speech Speed, Import Excel, Reset Default) -->
+    <div class="flex items-center gap-1.5 shrink-0">
+      <!-- Speech Speed Toggle (1.0x / 0.8x) -->
+      <button id="btnToggleSpeed" type="button" title="Tốc độ phát âm tiếng Anh"
+        class="px-2 py-1.5 rounded-xl bg-white hover:bg-paper-100 border border-paper-300 text-navy-800 font-mono text-[11px] font-bold active:scale-95 transition-transform">
+        1.0x
+      </button>
+
+      <!-- Auto-Match Toggle -->
+      <button id="btnToggleAutoMatch" type="button" title="Tự khớp ngay khi gõ đủ chữ đúng"
+        class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-sage-100 border-sage-500/30 text-sage-600">
+        <span id="autoMatchDot" class="w-1.5 h-1.5 rounded-full bg-sage-500"></span>
         <span class="hidden md:inline">Tự khớp</span>
         <span class="md:hidden">Auto</span>
       </button>
 
-      <!-- Shuffle Deck -->
-      <button id="btnShuffle" type="button" title="Xáo trộn ngẫu nhiên 100 từ trong bộ hiện tại"
-        class="p-2 sm:px-3 sm:py-2 rounded-xl bg-paper-50 hover:bg-white border border-paper-300/90 text-navy-800 text-xs font-semibold flex items-center gap-1.5 shadow-xs active:scale-95 transition-transform">
+      <!-- Shuffle Current Set -->
+      <button id="btnShuffle" type="button" title="Xáo trộn ngẫu nhiên 100 từ trong bộ"
+        class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white hover:bg-paper-100 border border-paper-300 text-navy-800 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-transform">
         <svg class="w-4 h-4 text-terracotta-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
-        <span class="hidden sm:inline">Xáo trộn</span>
+        <span class="hidden lg:inline">Xáo trộn</span>
       </button>
 
-      <!-- Import Excel / CSV / JSON -->
-      <label for="fileImportInput" title="Nạp file Excel (.xlsx, .csv) hoặc JSON mới"
-        class="cursor-pointer p-2 sm:px-3 sm:py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-paper-50 text-xs font-semibold flex items-center gap-1.5 shadow-xs active:scale-95 transition-transform">
-        <svg class="w-4 h-4 text-terracotta-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <!-- Review Missed Words in Current Set -->
+      <button id="btnReviewWrongTop" type="button" title="Ôn lại các từ đã gõ sai"
+        class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white hover:bg-crimson-100/60 border border-paper-300 text-crimson-600 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-transform">
+        <span>Ôn sai</span>
+        <span id="topWrongBadge" class="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-crimson-100 text-crimson-600 font-bold">0</span>
+      </button>
+
+      <!-- Import Excel / CSV / JSON (Saves permanently to IndexedDB) -->
+      <label for="fileImportInput" title="Nạp file Excel (.xlsx/.xls), CSV hoặc JSON và lưu vĩnh viễn"
+        class="cursor-pointer px-2.5 py-1.5 sm:px-3 rounded-xl bg-navy-800 hover:bg-navy-900 text-paper-50 text-xs font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-transform">
+        <svg class="w-4 h-4 text-terracotta-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
         </svg>
-        <span class="hidden sm:inline">Nạp Excel</span>
+        <span>Nạp Excel</span>
       </label>
       <input id="fileImportInput" type="file" accept=".xlsx,.xls,.csv,.json" class="hidden" />
+
+      <!-- Reset to Default Built-in Dataset -->
+      <button id="btnResetToDefault" type="button" title="Xóa dữ liệu đã nạp và khôi phục bộ từ gốc Oxford 3000"
+        class="hidden p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white hover:bg-crimson-100 border border-crimson-500/30 text-crimson-600 text-xs font-semibold items-center gap-1 active:scale-95 transition-transform">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        <span class="hidden md:inline">Khôi phục gốc</span>
+      </button>
     </div>
   </header>
 
-  <!-- 120 FPS REQUESTANIMATIONFRAME PROGRESS BAR -->
-  <div class="w-full max-w-4xl mx-auto px-3 sm:px-6 shrink-0">
-    <div class="flex items-center justify-between text-[11px] sm:text-xs font-medium text-slate-600 mb-1">
-      <div class="flex items-center gap-2">
+  <!-- ==================== 120 FPS PROGRESS BAR & LIVE STATS ==================== -->
+  <div class="w-full max-w-5xl mx-auto px-3 sm:px-5 shrink-0">
+    <div class="flex items-center justify-between text-[11px] sm:text-xs font-semibold text-slate-600 mb-1">
+      <div class="flex items-center gap-2 sm:gap-3">
         <span id="progressCounter" class="font-mono font-bold text-navy-900">1 / 100</span>
-        <span class="text-slate-300">•</span>
-        <span id="statsAccuracy" class="text-sage-600 font-semibold">Chính xác: 100%</span>
+        <span class="text-sage-600">Đúng: <strong id="statCorrect" class="font-mono">0</strong></span>
+        <span class="text-crimson-600">Sai: <strong id="statWrong" class="font-mono">0</strong></span>
+        <span class="hidden sm:inline text-terracotta-600">Chuỗi: <strong id="statStreak" class="font-mono">0</strong>🔥</span>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2.5">
         <span id="statsWpm" class="font-mono text-slate-500">0 WPM</span>
-        <button id="btnSkipWord" type="button" class="text-slate-400 hover:text-terracotta-600 underline decoration-dotted transition-colors ml-1">
-          Bỏ qua →
+        <button id="btnSkipWord" type="button" class="text-slate-400 hover:text-terracotta-600 underline decoration-dotted transition-colors">
+          Bỏ qua (Esc)
         </button>
       </div>
     </div>
-    <div class="w-full h-2 bg-paper-200 rounded-full overflow-hidden p-0.5 border border-paper-300/60">
-      <div id="rafProgressBar" class="h-full bg-gradient-to-r from-terracotta-500 to-amber-500 rounded-full origin-left" style="width: 1%; will-change: width;"></div>
+    <div class="w-full h-2 bg-paper-200 rounded-full overflow-hidden p-0.5 border border-paper-300/70">
+      <div id="rafProgressBar" class="h-full bg-gradient-to-r from-terracotta-500 to-sage-500 rounded-full" style="width: 1%; will-change: width;"></div>
     </div>
   </div>
 
-  <!-- MAIN COMPACT FLASHCARD STAGE (FITS REMAINING VIEWPORT) -->
-  <main class="flex-1 w-full max-w-3xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex flex-col justify-center min-h-0">
-    <!-- Shake Wrapper (Separate from 3D flip transform to avoid transform conflict at 120fps) -->
-    <div id="cardShakeWrapper" class="w-full h-full max-h-[540px] sm:max-h-[560px] flex flex-col">
+  <!-- ==================== MAIN CENTERED 3D FLASHCARD STAGE ==================== -->
+  <main class="flex-1 w-full max-w-3xl mx-auto px-3 sm:px-5 py-2 sm:py-3 flex flex-col justify-center min-h-0">
+    <div id="cardShakeWrapper" class="w-full h-full max-h-[530px] sm:max-h-[550px] flex flex-col">
       <div class="scene-3d w-full h-full">
         <div id="flashcard3D" class="card-3d">
 
           <!-- ==================== FRONT FACE (VIETNAMESE MEANING) ==================== -->
-          <section class="card-face card-front bg-paper-50 rounded-3xl border border-paper-300 shadow-[0_14px_34px_-10px_rgba(15,23,42,0.12)] flex flex-col justify-between p-4 sm:p-7 overflow-hidden">
-            <!-- Top Row: Card Number, Part of Speech & 3-Attempt Hearts -->
+          <section class="card-face card-front bg-white rounded-3xl border border-paper-300 shadow-[0_14px_34px_-10px_rgba(30,41,59,0.12)] flex flex-col justify-between p-4 sm:p-7 overflow-hidden">
+            <!-- Top Row: Card Position, Part of Speech Badge & 3 Mistake Dots -->
             <div class="flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
-                <span id="frontIndexPill" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-paper-200/80 text-navy-800">
+                <span id="frontIndexPill" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-paper-100 text-navy-800 border border-paper-200">
                   #1 / 100
                 </span>
-                <span id="frontPosBadge" class="font-serif italic font-semibold text-xs sm:text-sm px-2.5 py-0.5 rounded-lg bg-navy-900 text-paper-50">
-                  n.
+                <span id="frontPosBadge" class="font-serif italic font-semibold text-xs sm:text-sm px-2.5 py-0.5 rounded-lg bg-navy-800 text-paper-50">
+                  v.
                 </span>
               </div>
 
-              <!-- 3 Attempts Indicator -->
-              <div class="flex items-center gap-1.5 bg-paper-100 px-2.5 py-1 rounded-full border border-paper-200" title="Số lần thử còn lại trước khi lật thẻ xem gợi ý">
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-0.5 hidden sm:inline">Lượt thử</span>
+              <!-- 3 Mistake Counter Dots -->
+              <div class="flex items-center gap-1.5 bg-paper-50 px-2.5 py-1 rounded-full border border-paper-200" title="Sai 3 lần sẽ tự động lật thẻ để gõ theo đáp án">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mr-0.5 hidden sm:inline">Lượt thử</span>
                 <span id="attemptDot1" class="w-2.5 h-2.5 rounded-full bg-terracotta-500 transition-transform duration-200"></span>
                 <span id="attemptDot2" class="w-2.5 h-2.5 rounded-full bg-terracotta-500 transition-transform duration-200"></span>
                 <span id="attemptDot3" class="w-2.5 h-2.5 rounded-full bg-terracotta-500 transition-transform duration-200"></span>
               </div>
             </div>
 
-            <!-- Center: Vietnamese Meaning (Fluid Clamp Typography) -->
+            <!-- Center: Fluid Vietnamese Meaning -->
             <div class="flex-1 flex flex-col items-center justify-center text-center px-2 sm:px-6 my-2 min-h-0 overflow-hidden">
-              <span class="text-[11px] uppercase tracking-[0.18em] font-bold text-terracotta-600/80 mb-1.5 sm:mb-2">
+              <span class="text-[11px] uppercase tracking-[0.18em] font-bold text-terracotta-600 mb-1.5">
                 Nghĩa tiếng Việt
               </span>
               <h1 id="frontMeaningText" class="fluid-vi-meaning font-serif font-bold text-navy-900 break-words max-w-full">
                 từ bỏ, ruồng bỏ
               </h1>
-              <!-- Subtle letter-length & hint cue -->
-              <div id="frontHintBar" class="mt-2.5 sm:mt-3 flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
-                <span id="frontLetterCount" class="px-2 py-0.5 rounded bg-paper-200/70 text-navy-800">7 chữ cái</span>
-                <button id="btnPeekFirstLetter" type="button" class="px-2 py-0.5 rounded bg-paper-100 hover:bg-paper-200 text-slate-600 transition-colors">
-                  Gợi ý chữ đầu (Tab)
+
+              <!-- Letter count & audio hint trigger -->
+              <div class="mt-2.5 sm:mt-3 flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
+                <span id="frontLetterCount" class="px-2 py-0.5 rounded bg-paper-100 text-navy-800 border border-paper-200">7 chữ cái</span>
+                <button id="btnAudioHint" type="button" title="Nghe phát âm gợi ý (Ctrl+Space)"
+                  class="px-2.5 py-0.5 rounded bg-paper-100 hover:bg-paper-200 text-navy-800 transition-colors flex items-center gap-1">
+                  <span>🔊 Nghe gợi ý</span>
                 </button>
               </div>
             </div>
 
-            <!-- Bottom: Interactive Typing Input Zone -->
+            <!-- Bottom: Live Character Feedback & Focused Typing Input -->
             <div class="shrink-0 w-full max-w-xl mx-auto">
-              <!-- Real-time character feedback overlay display -->
+              <!-- Live prefix coloring -->
               <div id="frontLiveFeedback" class="h-6 mb-1 flex items-center justify-center font-mono text-sm sm:text-base font-bold tracking-wider overflow-hidden"></div>
 
               <div class="relative flex items-center">
@@ -317,26 +353,28 @@
                   autocorrect="off"
                   autocapitalize="off"
                   spellcheck="false"
-                  placeholder="Gõ từ tiếng Anh..."
-                  class="fluid-input w-full text-center font-mono font-bold bg-white text-navy-900 placeholder-slate-300 border-2 border-paper-300 focus:border-navy-900 focus:outline-none rounded-2xl py-2.5 sm:py-3.5 px-12 shadow-inner transition-colors"
+                  placeholder="Gõ từ tiếng Anh tương ứng..."
+                  class="fluid-input w-full text-center font-mono font-bold bg-paper-50 text-navy-900 placeholder-slate-300 border-2 border-paper-300 focus:border-navy-800 focus:bg-white focus:outline-none rounded-2xl py-2.5 sm:py-3.5 px-12 shadow-inner transition-colors"
                 />
                 <button id="btnSubmitFront" type="button" title="Kiểm tra (Enter)"
-                  class="absolute right-2 p-2 rounded-xl bg-navy-900 hover:bg-terracotta-600 text-white transition-colors active:scale-95">
+                  class="absolute right-2 p-2 rounded-xl bg-navy-800 hover:bg-terracotta-600 text-white transition-colors active:scale-95">
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </button>
               </div>
 
-              <div id="frontStatusMessage" class="h-5 mt-1.5 text-center text-xs font-semibold text-slate-500">
-                Nhấn <kbd class="px-1.5 py-0.5 bg-paper-200 rounded text-navy-800 font-mono text-[10px]">Enter</kbd> để kiểm tra • Gõ sai 3 lần sẽ lật thẻ gợi ý
+              <div id="frontStatusMessage" class="h-5 mt-1.5 text-center text-xs font-medium text-slate-500">
+                <kbd class="px-1.5 py-0.5 bg-paper-100 border border-paper-200 rounded text-navy-800 font-mono text-[10px]">Enter</kbd> kiểm tra •
+                <kbd class="px-1.5 py-0.5 bg-paper-100 border border-paper-200 rounded text-navy-800 font-mono text-[10px]">Ctrl+Space</kbd> nghe gợi ý •
+                <kbd class="px-1.5 py-0.5 bg-paper-100 border border-paper-200 rounded text-navy-800 font-mono text-[10px]">Esc</kbd> bỏ qua
               </div>
             </div>
           </section>
 
           <!-- ==================== BACK FACE (ENGLISH REVEAL & SHADOW TYPING) ==================== -->
-          <section class="card-face card-back bg-navy-900 text-paper-50 rounded-3xl border border-navy-800 shadow-[0_18px_40px_-10px_rgba(15,23,42,0.35)] flex flex-col justify-between p-4 sm:p-7 overflow-hidden">
-            <!-- Top Row: Mode Status Badge & Audio Controls -->
+          <section class="card-face card-back bg-navy-800 text-paper-50 rounded-3xl border border-navy-900 shadow-[0_18px_40px_-10px_rgba(15,23,42,0.35)] flex flex-col justify-between p-4 sm:p-7 overflow-hidden">
+            <!-- Top Row: Mode Badge & Audio Controls -->
             <div class="flex items-center justify-between gap-2 shrink-0">
               <div id="backModeBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sage-500/20 text-emerald-300 border border-emerald-400/30">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -346,8 +384,7 @@
               </div>
 
               <div class="flex items-center gap-1.5">
-                <!-- Speak Word Button -->
-                <button id="btnSpeakWord" type="button" title="Nghe phát âm từ (Ctrl)"
+                <button id="btnSpeakWord" type="button" title="Nghe lại từ (Ctrl+Space)"
                   class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-paper-50 text-xs font-semibold transition-all active:scale-95">
                   <div id="audioWaveIcon" class="flex items-end gap-0.5 h-3.5">
                     <span class="wave-bar w-0.5 h-full bg-terracotta-500 rounded-full"></span>
@@ -358,21 +395,20 @@
                   <span>Nghe từ</span>
                 </button>
 
-                <!-- Speak Example Sentence Button -->
-                <button id="btnSpeakExample" type="button" title="Đọc câu ví dụ (Alt)"
+                <button id="btnSpeakExample" type="button" title="Đọc câu ví dụ"
                   class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-paper-200 text-xs font-semibold transition-all active:scale-95">
                   Ví dụ 🔊
                 </button>
               </div>
             </div>
 
-            <!-- Center: English Word, IPA, Vietnamese Meaning & Example -->
+            <!-- Center: English Word, IPA, Vietnamese Meaning & Short Example -->
             <div class="flex-1 flex flex-col items-center justify-center text-center px-2 sm:px-5 my-1 min-h-0 overflow-hidden">
               <div class="flex items-baseline justify-center gap-2.5 flex-wrap">
                 <h2 id="backEnglishWord" class="fluid-en-word font-mono font-bold text-white tracking-tight">
                   abandon
                 </h2>
-                <span id="backPosBadge" class="font-serif italic text-sm sm:text-base text-terracotta-500 font-semibold">
+                <span id="backPosBadge" class="font-serif italic text-sm sm:text-base text-amber-400 font-semibold">
                   v.
                 </span>
               </div>
@@ -385,20 +421,20 @@
                 từ bỏ, ruồng bỏ
               </p>
 
-              <!-- Example Sentence Box -->
+              <!-- Example Sentence -->
               <div id="backExampleBox" class="mt-3 sm:mt-4 w-full max-w-xl bg-white/5 border border-white/10 rounded-2xl px-3.5 py-2.5 text-left">
-                <p id="backExampleText" class="fluid-example text-paper-100/90 italic font-serif">
-                  "We had to abandon the car and walk the rest of the way."
+                <p id="backExampleText" class="fluid-example text-paper-100/95 italic font-serif">
+                  "We had to abandon the car in the snow."
                 </p>
               </div>
             </div>
 
-            <!-- Bottom: Shadow Typing Area (Active when 3 mistakes occurred) OR Auto-advance Countdown -->
+            <!-- Bottom: Shadow Typing Area (After 3 Mistakes) OR Auto-Advance Countdown -->
             <div class="shrink-0 w-full max-w-xl mx-auto">
               <!-- Shadow Typing Container (Visible ONLY after 3 failed attempts) -->
               <div id="shadowTypingContainer" class="hidden">
                 <div class="relative flex items-center">
-                  <!-- Ghost Placeholder Overlay showing the target word -->
+                  <!-- Faint Ghost Overlay of Target English Word -->
                   <div id="shadowGhostText" aria-hidden="true"
                     class="fluid-input pointer-events-none absolute inset-0 flex items-center justify-center font-mono font-bold text-white/25 tracking-wider">
                     abandon
@@ -413,20 +449,20 @@
                     class="fluid-input relative z-10 w-full text-center font-mono font-bold bg-white/10 text-emerald-300 border-2 border-terracotta-500 focus:border-amber-400 focus:outline-none rounded-2xl py-2.5 sm:py-3 px-4 tracking-wider"
                   />
                 </div>
-                <p class="text-center text-xs text-amber-300/90 font-medium mt-1.5">
-                  Gõ lại đúng từ tiếng Anh hiển thị ở trên để ghi nhớ mặt chữ!
+                <p class="text-center text-xs text-amber-300 font-medium mt-1.5">
+                  Gõ theo chữ mờ ở trên để ghi nhớ mặt chữ — gõ đúng sẽ tự đọc & chuyển từ!
                 </p>
               </div>
 
-              <!-- Auto-Advance Indicator (Visible when answered correctly) -->
+              <!-- Auto-Advance Countdown (Visible when answered correctly) -->
               <div id="autoAdvanceContainer" class="flex flex-col items-center justify-center py-1">
                 <div class="w-48 h-1.5 bg-white/15 rounded-full overflow-hidden mb-1.5">
                   <div id="autoAdvanceBar" class="h-full bg-emerald-400 rounded-full" style="width: 100%; will-change: width;"></div>
                 </div>
                 <div class="flex items-center gap-3 text-xs text-paper-200/80">
                   <span>Tự động chuyển từ tiếp theo...</span>
-                  <button id="btnNextImmediate" type="button" class="text-amber-300 hover:underline font-semibold">
-                    Tiếp ngay →
+                  <button id="btnNextImmediate" type="button" class="text-amber-300 hover:underline font-bold">
+                    Tiếp ngay (Space/Enter) →
                   </button>
                 </div>
               </div>
@@ -438,25 +474,25 @@
     </div>
   </main>
 
-  <!-- COMPACT KEYBOARD SHORTCUTS FOOTER -->
-  <footer class="w-full max-w-4xl mx-auto px-4 pb-2.5 pt-1 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
+  <!-- ==================== COMPACT FOOTER ==================== -->
+  <footer class="w-full max-w-5xl mx-auto px-4 pb-2 pt-0.5 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
     <div class="flex items-center gap-3 flex-wrap">
-      <span><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Enter</kbd> Kiểm tra</span>
-      <span><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Ctrl</kbd> Đọc lại từ</span>
-      <span class="hidden sm:inline"><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Alt</kbd> Đọc ví dụ</span>
+      <span><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Enter</kbd> Kiểm tra / Tiếp</span>
+      <span><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Ctrl+Space</kbd> Nghe âm thanh</span>
+      <span class="hidden sm:inline"><kbd class="font-mono bg-paper-200/80 px-1.5 py-0.5 rounded text-navy-800">Esc</kbd> Bỏ qua từ</span>
     </div>
-    <div class="font-mono text-[11px] text-slate-400">
-      120 FPS GPU Engine
+    <div id="footerDbStatus" class="font-mono text-[11px] text-sage-600 font-semibold">
+      IndexedDB Vĩnh Viễn • 120 FPS
     </div>
   </footer>
 
-  <!-- ==================== DECK SELECTOR MODAL (34 DECKS OF 100 WORDS) ==================== -->
+  <!-- ==================== ALL SETS MODAL (GRID OF 100-WORD SETS) ==================== -->
   <div id="deckModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/60 backdrop-blur-xs p-3 sm:p-6">
     <div class="bg-paper-50 border border-paper-300 rounded-3xl shadow-2xl w-full max-w-3xl max-h-[88dvh] flex flex-col overflow-hidden">
       <div class="px-5 py-4 border-b border-paper-200 flex items-center justify-between shrink-0">
         <div>
-          <h2 class="font-bold text-navy-900 text-base sm:text-lg">Chọn Bộ Từ Vựng (100 từ / bộ)</h2>
-          <p id="deckModalSubtitle" class="text-xs text-slate-500">Tổng cộng 3.361 từ chia thành 34 bộ học tập</p>
+          <h2 class="font-bold text-navy-900 text-base sm:text-lg">Danh Sách Các Bộ Từ Vựng (100 từ / bộ)</h2>
+          <p id="deckModalSubtitle" class="text-xs text-slate-500">Tiến độ từng bộ được lưu tự động vĩnh viễn trong IndexedDB</p>
         </div>
         <button id="btnCloseDeckModal" type="button" class="p-2 rounded-xl hover:bg-paper-200 text-slate-600 transition-colors">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -465,271 +501,516 @@
         </button>
       </div>
 
-      <div id="deckGridContainer" class="p-4 sm:p-5 overflow-y-auto deck-scroll grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
-        <!-- Dynamically populated 34 deck cards -->
+      <div id="deckGridContainer" class="p-4 sm:p-5 overflow-y-auto modal-scroll grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+        <!-- Dynamically populated set cards -->
       </div>
 
       <div class="px-5 py-3 bg-paper-100 border-t border-paper-200 flex items-center justify-between text-xs shrink-0">
-        <button id="btnResetAllProgress" type="button" class="text-rose-600 hover:underline font-medium">
-          Đặt lại toàn bộ tiến độ
+        <button id="btnResetProgressOnly" type="button" class="text-crimson-600 hover:underline font-semibold">
+          Xóa tiến độ học tập
         </button>
-        <button id="btnCloseDeckModalFooter" type="button" class="px-4 py-2 rounded-xl bg-navy-900 text-white font-semibold">
+        <button id="btnCloseDeckModalFooter" type="button" class="px-4 py-2 rounded-xl bg-navy-800 text-white font-semibold">
           Đóng
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== DECK SUMMARY MODAL (ON 100 WORDS COMPLETED) ==================== -->
+  <!-- ==================== END-OF-SET SUMMARY MODAL ==================== -->
   <div id="summaryModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/65 backdrop-blur-xs p-3 sm:p-6">
     <div class="bg-paper-50 border border-paper-300 rounded-3xl shadow-2xl w-full max-w-xl max-h-[90dvh] flex flex-col overflow-hidden">
       <div class="p-5 sm:p-6 text-center border-b border-paper-200 bg-gradient-to-b from-amber-50/80 to-paper-50 shrink-0">
-        <div class="w-12 h-12 mx-auto rounded-2xl bg-sage-100 text-sage-600 flex items-center justify-center mb-2.5">
+        <div class="w-12 h-12 mx-auto rounded-2xl bg-sage-100 text-sage-600 flex items-center justify-center mb-2">
           <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <h2 id="summaryTitle" class="font-serif font-bold text-xl sm:text-2xl text-navy-900">Hoàn thành Bộ 1!</h2>
-        <p class="text-xs sm:text-sm text-slate-600 mt-1">Bạn đã hoàn thành xuất sắc phiên luyện gõ từ vựng.</p>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">Kết quả đã được lưu vĩnh viễn vào bộ nhớ trình duyệt.</p>
 
-        <!-- Stats Pills -->
         <div class="grid grid-cols-3 gap-2.5 mt-4">
           <div class="bg-white border border-paper-200 rounded-2xl p-2.5">
             <div class="text-[11px] text-slate-500">Tốc độ</div>
-            <div id="summaryWpm" class="font-mono font-bold text-base sm:text-lg text-navy-900">32 WPM</div>
+            <div id="summaryWpm" class="font-mono font-bold text-base sm:text-lg text-navy-900">35 WPM</div>
           </div>
           <div class="bg-white border border-paper-200 rounded-2xl p-2.5">
             <div class="text-[11px] text-slate-500">Độ chính xác</div>
-            <div id="summaryAccuracy" class="font-mono font-bold text-base sm:text-lg text-sage-600">94%</div>
+            <div id="summaryAccuracy" class="font-mono font-bold text-base sm:text-lg text-sage-600">95%</div>
           </div>
           <div class="bg-white border border-paper-200 rounded-2xl p-2.5">
-            <div class="text-[11px] text-slate-500">Cần ôn lại</div>
-            <div id="summaryMissedCount" class="font-mono font-bold text-base sm:text-lg text-terracotta-600">0 từ</div>
+            <div class="text-[11px] text-slate-500">Từ sai / cần ôn</div>
+            <div id="summaryMissedCount" class="font-mono font-bold text-base sm:text-lg text-crimson-600">0 từ</div>
           </div>
         </div>
       </div>
 
-      <!-- Missed Words List (Words that triggered 3-mistake shadow typing) -->
-      <div class="p-4 sm:p-5 flex-1 overflow-y-auto deck-scroll min-h-0">
+      <div class="p-4 sm:p-5 flex-1 overflow-y-auto modal-scroll min-h-0">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-          Danh sách từ từng sai 3 lần trong bộ này:
+          Danh sách từ gõ sai trong phiên này:
         </h3>
-        <div id="summaryMissedList" class="space-y-2">
-          <!-- Populated dynamically -->
-        </div>
+        <div id="summaryMissedList" class="space-y-2"></div>
       </div>
 
-      <!-- Actions -->
       <div class="p-4 bg-paper-100 border-t border-paper-200 flex flex-wrap items-center justify-end gap-2 shrink-0">
-        <button id="btnPracticeMissed" type="button" class="hidden px-4 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors">
-          Ôn lại các từ sai ngay
+        <button id="btnPracticeMissed" type="button" class="hidden px-4 py-2.5 rounded-xl bg-crimson-500 hover:bg-crimson-600 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors">
+          Ôn lại các từ sai
         </button>
         <button id="btnReplayDeck" type="button" class="px-4 py-2.5 rounded-xl bg-white border border-paper-300 hover:bg-paper-200 text-navy-900 text-xs sm:text-sm font-semibold transition-colors">
-          Học lại bộ này
+          Gõ lại bộ này
         </button>
-        <button id="btnNextDeck" type="button" class="px-4 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs sm:text-sm font-bold transition-colors">
+        <button id="btnNextDeck" type="button" class="px-4 py-2.5 rounded-xl bg-navy-800 hover:bg-navy-900 text-white text-xs sm:text-sm font-bold transition-colors">
           Sang Bộ tiếp theo →
         </button>
       </div>
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION (Replaces alert()) -->
+  <!-- ==================== TOAST NOTIFICATION (NO alert()) ==================== -->
   <div id="toastBanner" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
-    <div id="toastInner" class="bg-navy-900 text-paper-50 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-2xl shadow-lg border border-white/10">
+    <div id="toastInner" class="bg-navy-900 text-paper-50 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl border border-white/15">
       Thông báo
     </div>
   </div>
 
-  <!-- ==================== EMBEDDED OXFORD 3000 COMPACT DATASET & ENGINE ==================== -->
+  <!-- ==================== BUILT-IN DATASET + PERMANENT INDEXEDDB ENGINE ==================== -->
   <script>
     /**
-     * Compact Vocabulary Format: [word, ipa, pos, vietnamese_meaning, example_sentence]
-     * Preloaded with Oxford 3000 core vocabulary and extensible via Excel/CSV/JSON upload.
+     * Built-in Oxford 3000 Starter Dataset (360 essential words = 4 sets of 100)
+     * Format: [word, ipa, pos, vietnamese_meaning, short_example]
+     * Works 100% offline immediately, and is permanently replaced in IndexedDB when user uploads an Excel/CSV/JSON file.
      */
-    const BUILTIN_OXFORD_CORE = [
-      ["a / an", "/ə, ən/", "indefinite article", "một (mạo từ bất định)", "She has a dog and an orange cat."],
-      ["abandon", "/əˈbændən/", "v.", "từ bỏ, ruồng bỏ", "We had to abandon the car in the snow."],
-      ["abandoned", "/əˈbændənd/", "adj.", "bị bỏ rơi, hoang phế", "The explorers found an abandoned village."],
-      ["ability", "/əˈbɪləti/", "n.", "khả năng, năng lực", "She has the ability to explain things clearly."],
-      ["able", "/ˈeɪbl/", "adj.", "có khả năng, có năng lực", "Will you be able to come to the meeting?"],
-      ["about", "/əˈbaʊt/", "prep., adv.", "về, khoảng chừng", "Tell me all about your trip to Hanoi."],
-      ["above", "/əˈbʌv/", "prep., adv.", "ở trên, cao hơn", "The plane flew high above the clouds."],
-      ["abroad", "/əˈbrɔːd/", "adv.", "ở nước ngoài, ra nước ngoài", "He plans to study abroad next year."],
-      ["absence", "/ˈæbsəns/", "n.", "sự vắng mặt", "His repeated absence worried the teacher."],
-      ["absent", "/ˈæbsənt/", "adj.", "vắng mặt, nghỉ", "Why were you absent from class yesterday?"],
-      ["absolute", "/ˈæbsəluːt/", "adj.", "tuyệt đối, hoàn toàn", "I have absolute confidence in her decision."],
-      ["absolutely", "/ˈæbsəluːtli/", "adv.", "hoàn toàn, chắc chắn rồi", "You are absolutely right about that."],
-      ["absorb", "/əbˈzɔːb/", "v.", "hấp thụ, tiếp thu", "Plants absorb carbon dioxide from the air."],
-      ["abuse", "/əˈbjuːs/", "n., v.", "lạm dụng, ngược đãi", "The charity helps victims of domestic abuse."],
-      ["academic", "/ˌækəˈdemɪk/", "adj.", "thuộc học thuật, đại học", "The university has a strong academic reputation."],
-      ["accent", "/ˈæksent/", "n.", "giọng điệu, dấu trọng âm", "She speaks English with a slight French accent."],
-      ["accept", "/əkˈsept/", "v.", "chấp nhận, đồng ý", "Please accept our sincere apologies."],
-      ["acceptable", "/əkˈseptəbl/", "adj.", "có thể chấp nhận được", "This level of noise is not acceptable."],
-      ["access", "/ˈækses/", "n., v.", "lối vào, quyền truy cập", "Students have free access to the library."],
-      ["accident", "/ˈæksɪdənt/", "n.", "tai nạn, sự tình cờ", "He was injured in a car accident last week."],
-      ["accidental", "/ˌæksɪˈdentl/", "adj.", "tình cờ, ngẫu nhiên", "The damage to the painting was purely accidental."],
-      ["accommodation", "/əˌkɒməˈdeɪʃn/", "n.", "chỗ ở, nơi lưu trú", "Hotel accommodation is included in the price."],
-      ["accompany", "/əˈkʌmpəni/", "v.", "đi cùng, hộ tống, đệm đàn", "Children must be accompanied by an adult."],
-      ["according to", "/əˈkɔːdɪŋ tu/", "prep.", "theo như", "According to the weather forecast, it will rain."],
-      ["account", "/əˈkaʊnt/", "n., v.", "tài khoản, bản tường thuật", "I opened a new savings account yesterday."],
-      ["accurate", "/ˈækjərət/", "adj.", "chính xác, đúng đắn", "The report gives an accurate picture of the economy."],
-      ["accuse", "/əˈkjuːz/", "v.", "buộc tội, kết tội", "She accused him of lying about the money."],
-      ["achieve", "/əˈtʃiːv/", "v.", "đạt được, giành được", "You can achieve anything if you work hard."],
-      ["achievement", "/əˈtʃiːvmənt/", "n.", "thành tựu, thành tích", "Winning the gold medal was a great achievement."],
-      ["acid", "/ˈæsɪd/", "n., adj.", "axit, có vị chua", "Lemons contain natural citric acid."],
-      ["acknowledge", "/əkˈnɒlɪdʒ/", "v.", "công nhận, thừa nhận", "They acknowledged that the mistake was theirs."],
-      ["acquire", "/əˈkwaɪə(r)/", "v.", "thu được, đạt được, tiếp thu", "She acquired a good knowledge of Japanese."],
-      ["across", "/əˈkrɒs/", "prep., adv.", "ngang qua, bên kia", "He walked across the bridge slowly."],
-      ["act", "/ækt/", "v., n.", "hành động, diễn xuất, đạo luật", "We must act quickly to solve the problem."],
-      ["action", "/ˈækʃn/", "n.", "hành động, hoạt động", "Actions speak louder than words."],
-      ["active", "/ˈæktɪv/", "adj.", "năng động, tích cực", "My grandmother stays very active for her age."],
-      ["activity", "/ækˈtɪvəti/", "n.", "hoạt động", "Outdoor activities are great for children."],
-      ["actor", "/ˈæktə(r)/", "n.", "nam diễn viên", "He is a famous Hollywood actor."],
-      ["actress", "/ˈæktrəs/", "n.", "nữ diễn viên", "She won an award for best actress."],
-      ["actual", "/ˈæktʃuəl/", "adj.", "thực tế, có thật", "The actual cost was higher than we expected."],
-      ["actually", "/ˈæktʃuəli/", "adv.", "thực ra, trên thực tế", "Actually, I prefer tea to coffee."],
-      ["adapt", "/əˈdæpt/", "v.", "thích nghi, điều chỉnh", "Animals must adapt to their environment to survive."],
-      ["add", "/æd/", "v.", "thêm vào, cộng lại", "Add a little salt and pepper to the soup."],
-      ["addition", "/əˈdɪʃn/", "n.", "sự thêm vào, phép cộng", "In addition to English, he speaks Spanish."],
-      ["additional", "/əˈdɪʃənl/", "adj.", "bổ sung, thêm vào", "There is no additional charge for delivery."],
-      ["address", "/əˈdres/", "n., v.", "địa chỉ, giải quyết, phát biểu", "Please write your home address clearly."],
-      ["adequate", "/ˈædɪkwət/", "adj.", "đầy đủ, thỏa đáng", "Make sure you get adequate sleep before the exam."],
-      ["adjust", "/əˈdʒʌst/", "v.", "điều chỉnh, thích nghi", "You can adjust the height of the chair."],
-      ["admire", "/ədˈmaɪə(r)/", "v.", "ngưỡng mộ, khâm phục", "I really admire her courage and determination."],
-      ["admit", "/ədˈmɪt/", "v.", "thừa nhận, cho phép vào", "He admitted that he had made a mistake."],
-      ["adopt", "/əˈdɒpt/", "v.", "nhận làm con nuôi, áp dụng", "They decided to adopt a rescue puppy."],
-      ["adult", "/ˈædʌlt/", "n., adj.", "người lớn, trưởng thành", "Tickets cost ten dollars for adults."],
-      ["advance", "/ədˈvɑːns/", "n., v.", "sự tiến bộ, ứng trước", "Medical science has made huge advances."],
-      ["advanced", "/ədˈvɑːnst/", "adj.", "tiên tiến, nâng cao", "She is taking an advanced English course."],
-      ["advantage", "/ədˈvɑːntɪdʒ/", "n.", "lợi thế, ưu điểm", "Speaking two languages is a big advantage."],
-      ["adventure", "/ədˈventʃə(r)/", "n.", "cuộc phiêu lưu, mạo hiểm", "Traveling alone can be an exciting adventure."],
-      ["advertise", "/ˈædvətaɪz/", "v.", "quảng cáo", "Companies advertise their products on social media."],
-      ["advertisement", "/ədˈvɜːtɪsmənt/", "n.", "bài quảng cáo", "I saw an advertisement for the job online."],
-      ["advice", "/ədˈvaɪs/", "n.", "lời khuyên", "Take my advice and start studying early."],
-      ["advise", "/ədˈvaɪz/", "v.", "khuyên bảo, tư vấn", "Doctors advise eating plenty of fresh vegetables."],
-      ["affair", "/əˈfeə(r)/", "n.", "công việc, sự kiện, vấn đề", "The minister handles international affairs."],
-      ["affect", "/əˈfekt/", "v.", "ảnh hưởng đến, tác động", "Lack of sleep can affect your concentration."],
-      ["afford", "/əˈfɔːd/", "v.", "có đủ khả năng chi trả", "We cannot afford to buy a new house right now."],
-      ["afraid", "/əˈfreɪd/", "adj.", "sợ hãi, e ngại", "Don't be afraid to ask questions in class."],
-      ["after", "/ˈɑːftə(r)/", "prep., conj.", "sau khi", "Let's go for a walk after dinner."],
-      ["afternoon", "/ˌɑːftəˈnuːn/", "n.", "buổi chiều", "The meeting starts at two in the afternoon."],
-      ["afterwards", "/ˈɑːftəwədz/", "adv.", "sau đó, về sau", "We had lunch and went shopping afterwards."],
-      ["again", "/əˈɡen/", "adv.", "lại, một lần nữa", "Could you please say that again?"],
-      ["against", "/əˈɡenst/", "prep.", "chống lại, dựa vào", "Our team is playing against the champions tonight."],
-      ["age", "/eɪdʒ/", "n., v.", "tuổi tác, thời đại", "Children start school at the age of six."],
-      ["aged", "/eɪdʒd/", "adj.", "ở độ tuổi, già cả", "They have two children aged five and eight."],
-      ["agency", "/ˈeɪdʒənsi/", "n.", "đại lý, cơ quan", "We booked our holiday through a travel agency."],
-      ["agent", "/ˈeɪdʒənt/", "n.", "đại diện, điệp viên", "Please contact our local sales agent."],
-      ["aggressive", "/əˈɡresɪv/", "adj.", "hung hăng, quyết liệt", "Some dogs become aggressive when scared."],
-      ["ago", "/əˈɡəʊ/", "adv.", "cách đây, trước đây", "The train left ten minutes ago."],
-      ["agree", "/əˈɡriː/", "v.", "đồng ý, tán thành", "I completely agree with your point of view."],
-      ["agreement", "/əˈɡriːmənt/", "n.", "sự đồng ý, hợp đồng", "Both sides signed the trade agreement."],
-      ["ahead", "/əˈhed/", "adv.", "ở phía trước, trước mắt", "There is a sharp bend in the road ahead."],
-      ["aid", "/eɪd/", "n., v.", "sự viện trợ, cứu trợ", "Emergency food aid was sent to the region."],
-      ["aim", "/eɪm/", "n., v.", "mục tiêu, nhắm tới", "Our main aim is to improve customer service."],
-      ["air", "/eə(r)/", "n.", "không khí, bầu không khí", "Open the window to let in some fresh air."],
-      ["aircraft", "/ˈeəkrɑːft/", "n.", "máy bay, phi cơ", "The aircraft landed safely despite the fog."],
-      ["airport", "/ˈeəpɔːt/", "n.", "sân bay", "We arrived at the airport two hours early."],
-      ["alarm", "/əˈlɑːm/", "n., v.", "báo động, đồng hồ báo thức", "I set my alarm for six o'clock every morning."],
-      ["alcohol", "/ˈælkəhɒl/", "n.", "rượu, đồ uống có cồn", "He never drinks alcohol when driving."],
-      ["alive", "/əˈlaɪv/", "adj.", "còn sống, sinh động", "The injured bird was still alive."],
-      ["all", "/ɔːl/", "det., pron.", "tất cả, toàn bộ", "All students must wear their uniforms."],
-      ["allow", "/əˈlaʊ/", "v.", "cho phép", "Pets are not allowed inside the restaurant."],
-      ["almost", "/ˈɔːlməʊst/", "adv.", "hầu như, gần như", "Dinner is almost ready."],
-      ["alone", "/əˈləʊn/", "adj., adv.", "một mình, cô đơn", "She likes living alone in her apartment."],
-      ["along", "/əˈlɒŋ/", "prep., adv.", "dọc theo", "We walked slowly along the river bank."],
-      ["aloud", "/əˈlaʊd/", "adv.", "lớn tiếng, thành tiếng", "The teacher asked him to read the poem aloud."],
-      ["alphabet", "/ˈælfəbet/", "n.", "bảng chữ cái", "There are twenty-six letters in the English alphabet."],
-      ["already", "/ɔːlˈredi/", "adv.", "đã, rồi", "I have already finished my homework."],
-      ["also", "/ˈɔːlsəʊ/", "adv.", "cũng, ngoài ra", "She is a talented singer and also plays piano."],
-      ["alter", "/ˈɔːltə(r)/", "v.", "thay đổi, sửa đổi", "We had to alter our travel plans due to rain."],
-      ["alternative", "/ɔːlˈtɜːnətɪv/", "n., adj.", "sự thay thế, lựa chọn khác", "Is there a cheaper alternative to flying?"],
-      ["although", "/ɔːlˈðəʊ/", "conj.", "mặc dù", "Although it was raining, we went for a hike."],
-      ["altogether", "/ˌɔːltəˈɡeðə(r)/", "adv.", "hoàn toàn, tính tổng cộng", "That will be fifty dollars altogether."],
-      ["always", "/ˈɔːlweɪz/", "adv.", "luôn luôn", "She always arrives on time for work."]
+    const DEFAULT_OXFORD_DATASET = [
+      ["a / an","/ə, ən/","indefinite article","một (mạo từ bất định)","She has a dog and an orange cat."],
+      ["abandon","/əˈbændən/","v.","từ bỏ, ruồng bỏ","We had to abandon the car in the snow."],
+      ["abandoned","/əˈbændənd/","adj.","bị bỏ rơi, hoang phế","The explorers found an abandoned village."],
+      ["ability","/əˈbɪləti/","n.","khả năng, năng lực","She has the ability to explain things clearly."],
+      ["able","/ˈeɪbl/","adj.","có khả năng, có năng lực","Will you be able to come to the meeting?"],
+      ["about","/əˈbaʊt/","prep., adv.","về, khoảng chừng","Tell me all about your trip to Hanoi."],
+      ["above","/əˈbʌv/","prep., adv.","ở trên, cao hơn","The plane flew high above the clouds."],
+      ["abroad","/əˈbrɔːd/","adv.","ở nước ngoài, ra nước ngoài","He plans to study abroad next year."],
+      ["absence","/ˈæbsəns/","n.","sự vắng mặt","His repeated absence worried the teacher."],
+      ["absent","/ˈæbsənt/","adj.","vắng mặt, nghỉ","Why were you absent from class yesterday?"],
+      ["absolute","/ˈæbsəluːt/","adj.","tuyệt đối, hoàn toàn","I have absolute confidence in her decision."],
+      ["absolutely","/ˈæbsəluːtli/","adv.","hoàn toàn, chắc chắn rồi","You are absolutely right about that."],
+      ["absorb","/əbˈzɔːb/","v.","hấp thụ, tiếp thu","Plants absorb carbon dioxide from the air."],
+      ["abuse","/əˈbjuːs/","n., v.","lạm dụng, ngược đãi","The charity helps victims of domestic abuse."],
+      ["academic","/ˌækəˈdemɪk/","adj.","thuộc học thuật, đại học","The university has a strong academic reputation."],
+      ["accent","/ˈæksent/","n.","giọng điệu, dấu trọng âm","She speaks English with a slight French accent."],
+      ["accept","/əkˈsept/","v.","chấp nhận, đồng ý","Please accept our sincere apologies."],
+      ["acceptable","/əkˈseptəbl/","adj.","có thể chấp nhận được","This level of noise is not acceptable."],
+      ["access","/ˈækses/","n., v.","lối vào, quyền truy cập","Students have free access to the library."],
+      ["accident","/ˈæksɪdənt/","n.","tai nạn, sự tình cờ","He was injured in a car accident last week."],
+      ["accidental","/ˌæksɪˈdentl/","adj.","tình cờ, ngẫu nhiên","The damage to the painting was purely accidental."],
+      ["accommodation","/əˌkɒməˈdeɪʃn/","n.","chỗ ở, nơi lưu trú","Hotel accommodation is included in the price."],
+      ["accompany","/əˈkʌmpəni/","v.","đi cùng, hộ tống, đệm đàn","Children must be accompanied by an adult."],
+      ["according to","/əˈkɔːdɪŋ tu/","prep.","theo như","According to the weather forecast, it will rain."],
+      ["account","/əˈkaʊnt/","n., v.","tài khoản, bản tường thuật","I opened a new savings account yesterday."],
+      ["accurate","/ˈækjərət/","adj.","chính xác, đúng đắn","The report gives an accurate picture of the economy."],
+      ["accuse","/əˈkjuːz/","v.","buộc tội, kết tội","She accused him of lying about the money."],
+      ["achieve","/əˈtʃiːv/","v.","đạt được, giành được","You can achieve anything if you work hard."],
+      ["achievement","/əˈtʃiːvmənt/","n.","thành tựu, thành tích","Winning the gold medal was a great achievement."],
+      ["acid","/ˈæsɪd/","n., adj.","axit, có vị chua","Lemons contain natural citric acid."],
+      ["acknowledge","/əkˈnɒlɪdʒ/","v.","công nhận, thừa nhận","They acknowledged that the mistake was theirs."],
+      ["acquire","/əˈkwaɪə(r)/","v.","thu được, đạt được, tiếp thu","She acquired a good knowledge of Japanese."],
+      ["across","/əˈkrɒs/","prep., adv.","ngang qua, bên kia","He walked across the bridge slowly."],
+      ["act","/ækt/","v., n.","hành động, diễn xuất, đạo luật","We must act quickly to solve the problem."],
+      ["action","/ˈækʃn/","n.","hành động, hoạt động","Actions speak louder than words."],
+      ["active","/ˈæktɪv/","adj.","năng động, tích cực","My grandmother stays very active for her age."],
+      ["activity","/ækˈtɪvəti/","n.","hoạt động","Outdoor activities are great for children."],
+      ["actor","/ˈæktə(r)/","n.","nam diễn viên","He is a famous Hollywood actor."],
+      ["actress","/ˈæktrəs/","n.","nữ diễn viên","She won an award for best actress."],
+      ["actual","/ˈæktʃuəl/","adj.","thực tế, có thật","The actual cost was higher than we expected."],
+      ["actually","/ˈæktʃuəli/","adv.","thực ra, trên thực tế","Actually, I prefer tea to coffee."],
+      ["adapt","/əˈdæpt/","v.","thích nghi, điều chỉnh","Animals must adapt to their environment to survive."],
+      ["add","/æd/","v.","thêm vào, cộng lại","Add a little salt and pepper to the soup."],
+      ["addition","/əˈdɪʃn/","n.","sự thêm vào, phép cộng","In addition to English, he speaks Spanish."],
+      ["additional","/əˈdɪʃənl/","adj.","bổ sung, thêm vào","There is no additional charge for delivery."],
+      ["address","/əˈdres/","n., v.","địa chỉ, giải quyết, phát biểu","Please write your home address clearly."],
+      ["adequate","/ˈædɪkwət/","adj.","đầy đủ, thỏa đáng","Make sure you get adequate sleep before the exam."],
+      ["adjust","/əˈdʒʌst/","v.","điều chỉnh, thích nghi","You can adjust the height of the chair."],
+      ["admire","/ədˈmaɪə(r)/","v.","ngưỡng mộ, khâm phục","I really admire her courage and determination."],
+      ["admit","/ədˈmɪt/","v.","thừa nhận, cho phép vào","He admitted that he had made a mistake."],
+      ["adopt","/əˈdɒpt/","v.","nhận làm con nuôi, áp dụng","They decided to adopt a rescue puppy."],
+      ["adult","/ˈædʌlt/","n., adj.","người lớn, trưởng thành","Tickets cost ten dollars for adults."],
+      ["advance","/ədˈvɑːns/","n., v.","sự tiến bộ, ứng trước","Medical science has made huge advances."],
+      ["advanced","/ədˈvɑːnst/","adj.","tiên tiến, nâng cao","She is taking an advanced English course."],
+      ["advantage","/ədˈvɑːntɪdʒ/","n.","lợi thế, ưu điểm","Speaking two languages is a big advantage."],
+      ["adventure","/ədˈventʃə(r)/","n.","cuộc phiêu lưu, mạo hiểm","Traveling alone can be an exciting adventure."],
+      ["advertise","/ˈædvətaɪz/","v.","quảng cáo","Companies advertise their products on social media."],
+      ["advertisement","/ədˈvɜːtɪsmənt/","n.","bài quảng cáo","I saw an advertisement for the job online."],
+      ["advice","/ədˈvaɪs/","n.","lời khuyên","Take my advice and start studying early."],
+      ["advise","/ədˈvaɪz/","v.","khuyên bảo, tư vấn","Doctors advise eating plenty of fresh vegetables."],
+      ["affair","/əˈfeə(r)/","n.","công việc, sự kiện, vấn đề","The minister handles international affairs."],
+      ["affect","/əˈfekt/","v.","ảnh hưởng đến, tác động","Lack of sleep can affect your concentration."],
+      ["afford","/əˈfɔːd/","v.","có đủ khả năng chi trả","We cannot afford to buy a new house right now."],
+      ["afraid","/əˈfreɪd/","adj.","sợ hãi, e ngại","Don't be afraid to ask questions in class."],
+      ["after","/ˈɑːftə(r)/","prep., conj.","sau khi","Let's go for a walk after dinner."],
+      ["afternoon","/ˌɑːftəˈnuːn/","n.","buổi chiều","The meeting starts at two in the afternoon."],
+      ["afterwards","/ˈɑːftəwədz/","adv.","sau đó, về sau","We had lunch and went shopping afterwards."],
+      ["again","/əˈɡen/","adv.","lại, một lần nữa","Could you please say that again?"],
+      ["against","/əˈɡenst/","prep.","chống lại, dựa vào","Our team is playing against the champions tonight."],
+      ["age","/eɪdʒ/","n., v.","tuổi tác, thời đại","Children start school at the age of six."],
+      ["aged","/eɪdʒd/","adj.","ở độ tuổi, già cả","They have two children aged five and eight."],
+      ["agency","/ˈeɪdʒənsi/","n.","đại lý, cơ quan","We booked our holiday through a travel agency."],
+      ["agent","/ˈeɪdʒənt/","n.","đại diện, điệp viên","Please contact our local sales agent."],
+      ["aggressive","/əˈɡresɪv/","adj.","hung hăng, quyết liệt","Some dogs become aggressive when scared."],
+      ["ago","/əˈɡəʊ/","adv.","cách đây, trước đây","The train left ten minutes ago."],
+      ["agree","/əˈɡriː/","v.","đồng ý, tán thành","I completely agree with your point of view."],
+      ["agreement","/əˈɡriːmənt/","n.","sự đồng ý, hợp đồng","Both sides signed the trade agreement."],
+      ["ahead","/əˈhed/","adv.","ở phía trước, trước mắt","There is a sharp bend in the road ahead."],
+      ["aid","/eɪd/","n., v.","sự viện trợ, cứu trợ","Emergency food aid was sent to the region."],
+      ["aim","/eɪm/","n., v.","mục tiêu, nhắm tới","Our main aim is to improve customer service."],
+      ["air","/eə(r)/","n.","không khí, bầu không khí","Open the window to let in some fresh air."],
+      ["aircraft","/ˈeəkrɑːft/","n.","máy bay, phi cơ","The aircraft landed safely despite the fog."],
+      ["airport","/ˈeəpɔːt/","n.","sân bay","We arrived at the airport two hours early."],
+      ["alarm","/əˈlɑːm/","n., v.","báo động, đồng hồ báo thức","I set my alarm for six o'clock every morning."],
+      ["alcohol","/ˈælkəhɒl/","n.","rượu, đồ uống có cồn","He never drinks alcohol when driving."],
+      ["alive","/əˈlaɪv/","adj.","còn sống, sinh động","The injured bird was still alive."],
+      ["all","/ɔːl/","det., pron.","tất cả, toàn bộ","All students must wear their uniforms."],
+      ["allow","/əˈlaʊ/","v.","cho phép","Pets are not allowed inside the restaurant."],
+      ["almost","/ˈɔːlməʊst/","adv.","hầu như, gần như","Dinner is almost ready."],
+      ["alone","/əˈləʊn/","adj., adv.","một mình, cô đơn","She lives alone in her apartment."],
+      ["along","/əˈlɒŋ/","prep., adv.","dọc theo","We walked slowly along the river bank."],
+      ["aloud","/əˈlaʊd/","adv.","lớn tiếng, thành tiếng","The teacher asked him to read the poem aloud."],
+      ["alphabet","/ˈælfəbet/","n.","bảng chữ cái","There are twenty-six letters in the English alphabet."],
+      ["already","/ɔːlˈredi/","adv.","đã, rồi","I have already finished my homework."],
+      ["also","/ˈɔːlsəʊ/","adv.","cũng, ngoài ra","She is a talented singer and also plays piano."],
+      ["alter","/ˈɔːltə(r)/","v.","thay đổi, sửa đổi","We had to alter our travel plans due to rain."],
+      ["alternative","/ɔːlˈtɜːnətɪv/","n., adj.","sự thay thế, lựa chọn khác","Is there a cheaper alternative to flying?"],
+      ["although","/ɔːlˈðəʊ/","conj.","mặc dù","Although it was raining, we went for a hike."],
+      ["altogether","/ˌɔːltəˈɡeðə(r)/","adv.","hoàn toàn, tính tổng cộng","That will be fifty dollars altogether."],
+      ["always","/ˈɔːlweɪz/","adv.","luôn luôn","She always arrives on time for work."],
+
+      ["amaze","/əˈmeɪz/","v.","làm kinh ngạc","Her musical talent never fails to amaze me."],
+      ["amazing","/əˈmeɪzɪŋ/","adj.","tuyệt vời, đáng kinh ngạc","The view from the mountain top is amazing."],
+      ["ambition","/æmˈbɪʃn/","n.","tham vọng, hoài bão","His ambition is to become a famous surgeon."],
+      ["ambulance","/ˈæmbjələns/","n.","xe cứu thương","Call an ambulance immediately!"],
+      ["among","/əˈmʌŋ/","prep.","ở giữa, trong số","She was sitting among her close friends."],
+      ["amount","/əˈmaʊnt/","n., v.","số lượng, tổng cộng","We spent a large amount of money on repairs."],
+      ["amuse","/əˈmjuːz/","v.","làm vui, giải trí","The clown tried to amuse the children."],
+      ["analyse","/ˈænəlaɪz/","v.","phân tích","Scientists are analysing the blood samples."],
+      ["analysis","/əˈnæləsɪs/","n.","sự phân tích","The report provides a detailed analysis of the data."],
+      ["ancient","/ˈeɪnʃənt/","adj.","cổ đại, xưa","Rome is famous for its ancient buildings."],
+      ["anger","/ˈæŋɡə(r)/","n.","sự tức giận","He couldn't hide his anger when he heard the news."],
+      ["angle","/ˈæŋɡl/","n.","góc, góc độ","Look at the problem from a different angle."],
+      ["angry","/ˈæŋɡri/","adj.","tức giận","My parents were angry when I came home late."],
+      ["animal","/ˈænɪml/","n.","động vật","Dogs and cats are popular domestic animals."],
+      ["ankle","/ˈæŋkl/","n.","mắt cá chân","I twisted my ankle while playing football."],
+      ["anniversary","/ˌænɪˈvɜːsəri/","n.","ngày kỷ niệm","Tomorrow is our tenth wedding anniversary."],
+      ["announce","/əˈnaʊns/","v.","thông báo, tuyên bố","The company announced its new product today."],
+      ["annoy","/əˈnɔɪ/","v.","làm phiền, chọc tức","Loud noises really annoy me when I'm studying."],
+      ["annual","/ˈænjuəl/","adj.","hàng năm","The company holds an annual meeting in June."],
+      ["another","/əˈnʌðə(r)/","det., pron.","một cái khác, người khác","Would you like another cup of tea?"],
+      ["answer","/ˈɑːnsə(r)/","n., v.","câu trả lời, trả lời","Please answer all the questions on the form."],
+      ["anticipate","/ænˈtɪsɪpeɪt/","v.","dự đoán, mong đợi","We anticipate that sales will rise next month."],
+      ["anxiety","/æŋˈzaɪəti/","n.","sự lo âu, lo lắng","Waiting for exam results causes a lot of anxiety."],
+      ["anxious","/ˈæŋkʃəs/","adj.","lo lắng, bồn chồn","Parents are naturally anxious about their children."],
+      ["apart","/əˈpɑːt/","adv.","tách rời, cách xa","The two houses stand 500 meters apart."],
+      ["apartment","/əˈpɑːtmənt/","n.","căn hộ","They rent a two-bedroom apartment downtown."],
+      ["apologize","/əˈpɒlədʒaɪz/","v.","xin lỗi","I must apologize for keeping you waiting."],
+      ["apparent","/əˈpærənt/","adj.","rõ ràng, hiển nhiên","It soon became apparent that he was lying."],
+      ["appeal","/əˈpiːl/","n., v.","lời kêu gọi, hấp dẫn","The charity launched an appeal for donations."],
+      ["appear","/əˈpɪə(r)/","v.","xuất hiện, dường như","A ship suddenly appeared on the horizon."],
+      ["appearance","/əˈpɪərəns/","n.","ngoại hình, sự xuất hiện","You shouldn't judge people by their appearance."],
+      ["apple","/ˈæpl/","n.","quả táo","An apple a day keeps the doctor away."],
+      ["application","/ˌæplɪˈkeɪʃn/","n.","đơn xin việc, ứng dụng","Fill out the online application form."],
+      ["apply","/əˈplaɪ/","v.","nộp đơn, áp dụng","She applied for a job at a local bank."],
+      ["appoint","/əˈpɔɪnt/","v.","bổ nhiệm, chỉ định","They appointed a new manager last week."],
+      ["appointment","/əˈpɔɪntmənt/","n.","cuộc hẹn","I have a dental appointment at 3 PM."],
+      ["appreciate","/əˈpriːʃieɪt/","v.","đánh giá cao, cảm kích","I really appreciate all your help."],
+      ["approach","/əˈprəʊtʃ/","v., n.","tiếp cận, phương pháp","Winter is approaching quickly."],
+      ["appropriate","/əˈprəʊpriət/","adj.","thích hợp, phù hợp","Jeans are not appropriate for a formal wedding."],
+      ["approval","/əˈpruːvl/","n.","sự tán thành, phê duyệt","The plan needs the manager's approval."],
+      ["approve","/əˈpruːv/","v.","chấp thuận, tán thành","The committee approved the new budget."],
+      ["area","/ˈeəriə/","n.","khu vực, diện tích","There are many parks in this area."],
+      ["argue","/ˈɑːɡjuː/","v.","tranh cãi, lập luận","My brothers always argue about video games."],
+      ["argument","/ˈɑːɡjumənt/","n.","cuộc tranh cãi, lý lẽ","They had an argument over money."],
+      ["arise","/əˈraɪz/","v.","nảy sinh, phát sinh","Problems may arise if we don't plan ahead."],
+      ["arm","/ɑːm/","n., v.","cánh tay, vũ trang","She held the baby in her arms."],
+      ["army","/ˈɑːmi/","n.","quân đội","He joined the army when he was eighteen."],
+      ["around","/əˈraʊnd/","prep., adv.","xung quanh, khoảng","The earth moves around the sun."],
+      ["arrange","/əˈreɪndʒ/","v.","sắp xếp, thu xếp","I'll arrange a meeting for next Monday."],
+      ["arrangement","/əˈreɪndʒmənt/","n.","sự sắp xếp","We made arrangements to meet at the station."],
+      ["arrest","/əˈrest/","v., n.","bắt giữ","The police arrested the suspect last night."],
+      ["arrival","/əˈraɪvl/","n.","sự đến nơi","We are waiting for the arrival of the train."],
+      ["arrive","/əˈraɪv/","v.","đến nơi","What time does your flight arrive?"],
+      ["arrow","/ˈærəʊ/","n.","mũi tên","Follow the arrows to the exit."],
+      ["art","/ɑːt/","n.","nghệ thuật","She is studying modern art at university."],
+      ["article","/ˈɑːtɪkl/","n.","bài báo, mạo từ","I read an interesting article in the newspaper."],
+      ["artificial","/ˌɑːtɪˈfɪʃl/","adj.","nhân tạo","This juice contains no artificial colors."],
+      ["artist","/ˈɑːtɪst/","n.","nghệ sĩ, họa sĩ","Picasso was a famous Spanish artist."],
+      ["ashamed","/əˈʃeɪmd/","adj.","xấu hổ, hổ thẹn","You should be ashamed of your behavior."],
+      ["aside","/əˈsaɪd/","adv.","sang một bên","Step aside so people can pass."],
+      ["asleep","/əˈsliːp/","adj.","đang ngủ","The baby fell asleep in the car."],
+      ["aspect","/ˈæspekt/","n.","khía cạnh, mặt","We must consider every aspect of the problem."],
+      ["assist","/əˈsɪst/","v.","giúp đỡ, hỗ trợ","Can I assist you with your luggage?"],
+      ["assistance","/əˈsɪstəns/","n.","sự giúp đỡ","Thank you for your kind assistance."],
+      ["assistant","/əˈsɪstənt/","n., adj.","trợ lý, phụ tá","She works as a shop assistant."],
+      ["associate","/əˈsəʊsieɪt/","v.","liên kết, kết giao","People often associate summer with holidays."],
+      ["association","/əˌsəʊsiˈeɪʃn/","n.","hiệp hội, sự liên kết","He is a member of the Football Association."],
+      ["assume","/əˈsjuːm/","v.","cho rằng, giả định","I assume you have already heard the news."],
+      ["assure","/əˈʃʊə(r)/","v.","đảm bảo, cam đoan","I assure you that everything will be fine."],
+      ["atmosphere","/ˈætməsfɪə(r)/","n.","bầu khí quyển, không khí","The restaurant has a very relaxing atmosphere."],
+      ["atom","/ˈætəm/","n.","nguyên tử","Everything is made up of atoms."],
+      ["attach","/əˈtætʃ/","v.","đính kèm, gắn vào","Please find my resume attached to this email."],
+      ["attack","/əˈtæk/","n., v.","cuộc tấn công, tấn công","The army launched an attack at dawn."],
+      ["attempt","/əˈtempt/","n., v.","nỗ lực, cố gắng","He made an attempt to break the world record."],
+      ["attend","/əˈtend/","v.","tham dự, có mặt","Over 200 people attended the conference."],
+      ["attention","/əˈtenʃn/","n.","sự chú ý","Pay close attention to what the teacher says."],
+      ["attitude","/ˈætɪtjuːd/","n.","thái độ, quan điểm","A positive attitude helps you succeed."],
+      ["attorney","/əˈtɜːni/","n.","luật sư","You should consult an attorney before signing."],
+      ["attract","/əˈtrækt/","v.","thu hút, hấp dẫn","Bright flowers attract bees and butterflies."],
+      ["attraction","/əˈtrækʃn/","n.","sự thu hút, điểm tham quan","The Eiffel Tower is a major tourist attraction."],
+      ["attractive","/əˈtræktɪv/","adj.","hấp dẫn, quyến rũ","They offered him a very attractive salary."],
+      ["audience","/ˈɔːdiəns/","n.","khán giả, thính giả","The audience clapped loudly at the end."],
+      ["author","/ˈɔːθə(r)/","n.","tác giả","Who is your favorite book author?"],
+      ["authority","/ɔːˈθɒrəti/","n.","thẩm quyền, chính quyền","Local authorities are repairing the bridge."],
+      ["automatic","/ˌɔːtəˈmætɪk/","adj.","tự động","The doors are automatic."],
+      ["autumn","/ˈɔːtəm/","n.","mùa thu","Leaves turn yellow and fall in autumn."],
+      ["available","/əˈveɪləbl/","adj.","có sẵn, rảnh rỗi","Is this dress available in a larger size?"],
+      ["average","/ˈævərɪdʒ/","adj., n., v.","trung bình","The average temperature in summer is 32°C."],
+      ["avoid","/əˈvɔɪd/","v.","tránh, né tránh","Try to avoid driving during rush hour."],
+      ["awake","/əˈweɪk/","adj.","tỉnh táo, thức","I drank coffee to stay awake."],
+      ["award","/əˈwɔːd/","n., v.","giải thưởng, trao thưởng","She won the first prize award for painting."],
+      ["aware","/əˈweə(r)/","adj.","nhận thức, biết","Are you aware of the risks involved?"],
+      ["awful","/ˈɔːfl/","adj.","tồi tệ, kinh khủng","The weather was awful yesterday."],
+      ["awkward","/ˈɔːkwəd/","adj.","lúng túng, bất tiện","There was an awkward silence in the room."],
+      ["background","/ˈbækɡraʊnd/","n.","nền tảng, bối cảnh","Tell me a little about your educational background."],
+      ["bacteria","/bækˈtɪəriə/","n.","vi khuẩn","Washing hands kills harmful bacteria."],
+      ["baggage","/ˈbæɡɪdʒ/","n.","hành lý","Do not leave your baggage unattended."],
+      ["balance","/ˈbæləns/","n., v.","sự cân bằng, số dư","It's hard to keep your balance on ice."],
+      ["bargain","/ˈbɑːɡən/","n., v.","món hời, mặc cả","This coat was a real bargain at half price."],
+      ["barrier","/ˈbæriə(r)/","n.","rào cản, chướng ngại","Language can be a barrier to communication."],
+
+      ["basic","/ˈbeɪsɪk/","adj.","cơ bản","Everyone needs basic computer skills today."],
+      ["basis","/ˈbeɪsɪs/","n.","cơ sở, nền tảng","Trust is the basis of any good relationship."],
+      ["battery","/ˈbætri/","n.","pin, ắc quy","My phone battery is almost dead."],
+      ["battle","/ˈbætl/","n.","trận chiến, cuộc đấu tranh","Many soldiers died in the battle."],
+      ["beauty","/ˈbjuːti/","n.","vẻ đẹp, sắc đẹp","Vietnam is known for its natural beauty."],
+      ["behaviour","/bɪˈheɪvjə(r)/","n.","hành vi, cách cư xử","Rude behaviour will not be tolerated."],
+      ["belief","/bɪˈliːf/","n.","niềm tin, tín ngưỡng","Nothing could shake her belief in justice."],
+      ["benefit","/ˈbenɪfɪt/","n., v.","lợi ích, hưởng lợi","Regular exercise has many health benefits."],
+      ["beyond","/bɪˈjɒnd/","prep., adv.","vượt ra ngoài, phía bên kia","The mountain village lies beyond that forest."],
+      ["biology","/baɪˈɒlədʒi/","n.","sinh học","We studied human cells in biology class."],
+      ["bitter","/ˈbɪtə(r)/","adj.","đắng, cay đắng","Black coffee tastes quite bitter."],
+      ["blame","/bleɪm/","v., n.","đổ lỗi, khiển trách","Don't blame me for your own mistakes."],
+      ["border","/ˈbɔːdə(r)/","n.","biên giới, đường viền","They crossed the border into Thailand."],
+      ["borrow","/ˈbɒrəʊ/","v.","vay, mượn","Can I borrow your pen for a second?"],
+      ["bother","/ˈbɒðə(r)/","v.","làm phiền, bận tâm","Don't bother cooking tonight; let's order pizza."],
+      ["branch","/brɑːntʃ/","n.","cành cây, chi nhánh","Our bank has a branch in every major city."],
+      ["brave","/breɪv/","adj.","dũng cảm, gan dạ","Firefighters are very brave people."],
+      ["breath","/breθ/","n.","hơi thở","Take a deep breath and try to relax."],
+      ["breathe","/briːð/","v.","hít thở","It's difficult to breathe at high altitudes."],
+      ["brilliant","/ˈbrɪliənt/","adj.","xuất sắc, rực rỡ","That's a brilliant idea!"],
+      ["broad","/brɔːd/","adj.","rộng lớn, bao quát","He has broad shoulders."],
+      ["broadcast","/ˈbrɔːdkɑːst/","v., n.","phát sóng","The match will be broadcast live on TV."],
+      ["budget","/ˈbʌdʒɪt/","n.","ngân sách","We need to stick to our monthly budget."],
+      ["business","/ˈbɪznəs/","n.","kinh doanh, doanh nghiệp","She runs a successful online business."],
+      ["calculate","/ˈkælkjuleɪt/","v.","tính toán","We need to calculate the total cost of the trip."],
+      ["campaign","/kæmˈpeɪn/","n., v.","chiến dịch","The charity launched a campaign to plant trees."],
+      ["candidate","/ˈkændɪdət/","n.","ứng cử viên, thí sinh","There are five candidates for the manager position."],
+      ["capable","/ˈkeɪpəbl/","adj.","có khả năng","She is a very capable and hardworking employee."],
+      ["capacity","/kəˈpæsəti/","n.","sức chứa, năng lực","The stadium has a seating capacity of 50,000."],
+      ["capital","/ˈkæpɪtl/","n., adj.","thủ đô, vốn, chữ hoa","Hanoi is the capital city of Vietnam."],
+      ["capture","/ˈkæptʃə(r)/","v., n.","bắt giữ, chụp lại","The photographer captured a beautiful moment."],
+      ["career","/kəˈrɪə(r)/","n.","sự nghiệp","She had a successful career as a journalist."],
+      ["category","/ˈkætəɡəri/","n.","hạng mục, loại","Books are divided into different categories."],
+      ["celebrate","/ˈselɪbreɪt/","v.","ăn mừng, kỷ niệm","How do you usually celebrate New Year's Eve?"],
+      ["century","/ˈsentʃəri/","n.","thế kỷ","We are living in the twenty-first century."],
+      ["ceremony","/ˈserəməni/","n.","nghi lễ, buổi lễ","The wedding ceremony took place in a garden."],
+      ["certificate","/səˈtɪfɪkət/","n.","giấy chứng nhận, bằng cấp","She received a certificate for completing the course."],
+      ["challenge","/ˈtʃælɪndʒ/","n., v.","thử thách, thách thức","Learning a new language is an exciting challenge."],
+      ["character","/ˈkærəktə(r)/","n.","tính cách, nhân vật","Who is your favorite character in the book?"],
+      ["characteristic","/ˌkærəktəˈrɪstɪk/","n., adj.","đặc điểm, đặc trưng","Kindness is one of her best characteristics."],
+      ["charity","/ˈtʃærəti/","n.","tổ chức từ thiện, lòng nhân ái","She donates money to a children's charity."],
+      ["chemical","/ˈkemɪkl/","adj., n.","thuộc hóa học, hóa chất","Farmers should use fewer harmful chemicals."],
+      ["circumstance","/ˈsɜːkəmstəns/","n.","hoàn cảnh, tình huống","Under no circumstances should you open that door."],
+      ["citizen","/ˈsɪtɪzn/","n.","công dân","Every citizen has the right to vote."],
+      ["climate","/ˈklaɪmət/","n.","khí hậu","Vietnam has a tropical monsoon climate."],
+      ["colleague","/ˈkɒliːɡ/","n.","đồng nghiệp","I'm having lunch with a colleague today."],
+      ["combination","/ˌkɒmbɪˈneɪʃn/","n.","sự kết hợp","Sweet and sour is a great flavour combination."],
+      ["comfort","/ˈkʌmfət/","n., v.","sự thoải mái, an ủi","Modern cars are designed for maximum comfort."],
+      ["commercial","/kəˈmɜːʃl/","adj., n.","thuộc thương mại, quảng cáo","The movie was a huge commercial success."],
+      ["commission","/kəˈmɪʃn/","n., v.","ủy ban, tiền hoa hồng","Salespeople earn a 10% commission on every sale."],
+      ["commitment","/kəˈmɪtmənt/","n.","sự cam kết, tận tâm","Success requires hard work and commitment."],
+      ["committee","/kəˈmɪti/","n.","ủy ban, hội đồng","The committee will meet next week to decide."],
+      ["communicate","/kəˈmjuːnɪkeɪt/","v.","giao tiếp, truyền đạt","We communicate with each other via email."],
+      ["communication","/kəˌmjuːnɪˈkeɪʃn/","n.","sự giao tiếp, truyền thông","Good communication is essential in teamwork."],
+      ["community","/kəˈmjuːnəti/","n.","cộng đồng","The new park will benefit the whole community."],
+      ["comparison","/kəmˈpærɪsn/","n.","sự so sánh","There is no comparison between the two products."],
+      ["competition","/ˌkɒmpəˈtɪʃn/","n.","cuộc thi, sự cạnh tranh","She won first prize in the singing competition."],
+      ["competitive","/kəmˈpetətɪv/","adj.","có tính cạnh tranh","The job market is very competitive right now."],
+      ["complaint","/kəmˈpleɪnt/","n.","lời phàn nàn, đơn khiếu nại","We received several complaints about the noise."],
+      ["complex","/ˈkɒmpleks/","adj.","phức tạp","The human brain is a very complex system."],
+      ["complicated","/ˈkɒmplɪkeɪtɪd/","adj.","phức tạp, rắc rối","The rules of the game are too complicated."],
+      ["concentrate","/ˈkɒnsntreɪt/","v.","tập trung","Turn off the TV so I can concentrate on studying."],
+      ["concept","/ˈkɒnsept/","n.","khái niệm, ý tưởng","It's a simple concept that is easy to understand."],
+      ["concern","/kənˈsɜːn/","v., n.","lo ngại, mối quan tâm","Climate change is a major global concern."],
+      ["conclusion","/kənˈkluːʒn/","n.","sự kết luận, phần kết","In conclusion, I would like to thank everyone."],
+      ["condition","/kənˈdɪʃn/","n.","điều kiện, tình trạng","The used car is still in excellent condition."],
+      ["conference","/ˈkɒnfərəns/","n.","hội nghị","She is attending an international medical conference."],
+      ["confidence","/ˈkɒnfɪdəns/","n.","sự tự tin, lòng tin","Speaking in public builds your confidence."],
+      ["confident","/ˈkɒnfɪdənt/","adj.","tự tin","I feel confident that I will pass the exam."],
+      ["confirm","/kənˈfɜːm/","v.","xác nhận","Please email us to confirm your hotel booking."],
+      ["conflict","/ˈkɒnflɪkt/","n., v.","xung đột, mâu thuẫn","They tried to resolve the conflict peacefully."],
+      ["confront","/kənˈfrʌnt/","v.","đối mặt, đương đầu","We must confront the problem directly."],
+      ["confusion","/kənˈfjuːʒn/","n.","sự nhầm lẫn, hỗn loạn","To avoid confusion, please write your full name."],
+      ["congratulations","/kənˌɡrætʃuˈleɪʃnz/","n.","lời chúc mừng","Congratulations on passing your driving test!"],
+      ["conscious","/ˈkɒnʃəs/","adj.","có ý thức, tỉnh táo","The patient was still conscious after the fall."],
+      ["consequence","/ˈkɒnsɪkwəns/","n.","hậu quả, kết quả","You must accept the consequences of your actions."],
+      ["considerable","/kənˈsɪdərəbl/","adj.","đáng kể, lớn lao","Building a house requires a considerable amount of money."],
+      ["consideration","/kənˌsɪdəˈreɪʃn/","n.","sự cân nhắc, quan tâm","Thank you for your time and consideration."],
+      ["consistent","/kənˈsɪstənt/","adj.","nhất quán, kiên định","Consistent daily practice leads to fluency."],
+      ["constant","/ˈkɒnstənt/","adj.","liên tục, không đổi","The baby needs constant care and attention."],
+      ["construction","/kənˈstrʌkʃn/","n.","sự xây dựng, công trình","The new airport is currently under construction."],
+      ["consult","/kənˈsʌlt/","v.","tham khảo, tư vấn","Consult your doctor before taking any new medicine."],
+      ["consumer","/kənˈsjuːmə(r)/","n.","người tiêu dùng","Consumers are demanding more eco-friendly products."],
+      ["contemporary","/kənˈtemprəri/","adj.","đương đại, hiện đại","She loves contemporary art and architecture."],
+      ["context","/ˈkɒntekst/","n.","ngữ cảnh, bối cảnh","You can often guess a word's meaning from context."],
+      ["continent","/ˈkɒntɪnənt/","n.","châu lục, lục địa","Asia is the largest continent in the world."],
+      ["continuous","/kənˈtɪnjuəs/","adj.","liên tục, không ngừng","The machine makes a continuous humming noise."],
+      ["contract","/ˈkɒntrækt/","n., v.","hợp đồng, co lại","Read the contract carefully before signing it."],
+      ["contrast","/ˈkɒntrɑːst/","n., v.","sự tương phản, đối chiếu","There is a sharp contrast between rich and poor."],
+      ["contribute","/kənˈtrɪbjuːt/","v.","đóng góp, góp phần","Everyone contributed ideas to the project."],
+      ["contribution","/ˌkɒntrɪˈbjuːʃn/","n.","sự đóng góp","She made a huge contribution to medical science."],
+      ["convenient","/kənˈviːniənt/","adj.","tiện lợi, thuận tiện","Online shopping is very convenient for busy people."],
+      ["convention","/kənˈvenʃn/","n.","hội nghị, quy ước","Shaking hands is a common social convention."],
+      ["conversation","/ˌkɒnvəˈseɪʃn/","n.","cuộc trò chuyện","We had a pleasant conversation over coffee."],
+      ["convince","/kənˈvɪns/","v.","thuyết phục","He managed to convince me to join the trip."],
+      ["courage","/ˈkʌrɪdʒ/","n.","lòng dũng cảm","It takes courage to speak in front of a crowd."],
+      ["creative","/kriˈeɪtɪv/","adj.","sáng tạo","She has a very creative approach to problem-solving."],
+      ["creature","/ˈkriːtʃə(r)/","n.","sinh vật","Blue whales are the largest creatures on Earth."],
+      ["crisis","/ˈkraɪsɪs/","n.","cuộc khủng hoảng","The country is facing a severe economic crisis."],
+      ["crucial","/ˈkruːʃl/","adj.","cốt yếu, quan trọng","Good sleep is crucial for memory and focus."]
     ];
 
-    // Generate full 3,361-entry dataset structure if external full JSON isn't attached yet,
-    // while immediately supporting full Excel (.xlsx/.csv) & JSON replacement via SheetJS.
-    // Note: If `vocab_compact.json` is fetched in the same workspace, it seamlessly upgrades the list!
-    let VOCAB_LIST = [...BUILTIN_OXFORD_CORE];
-    let SOURCE_NAME = "Oxford 3000 Core";
+    // ==================== INDEXEDDB PERMANENT STORAGE LAYER ====================
+    const DB_NAME = 'Oxford3000FlashcardDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'vocabStore';
+    const CUSTOM_DATA_KEY = 'customDataset';
+    const PROGRESS_DATA_KEY = 'userProgress';
+    const LS_META_KEY = 'ox3000_storage_meta_v2';
+    const LS_PROGRESS_BACKUP_KEY = 'ox3000_progress_backup_v2';
 
-    // Try loading `vocab_compact.json` automatically if present in the same directory
-    async function tryAutoLoadCompactJson() {
-      try {
-        const res = await fetch('./vocab_compact.json');
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            VOCAB_LIST = data;
-            SOURCE_NAME = "Oxford 3000 Full";
-            saveCustomDatasetToCache(data, SOURCE_NAME);
-            initDecksAndRender(true);
-            showToast(`Đã nạp tự động ${data.length.toLocaleString()} từ từ vocab_compact.json`);
+    function openVocabDB() {
+      return new Promise((resolve, reject) => {
+        if (!('indexedDB' in window)) {
+          reject(new Error('IndexedDB not supported'));
+          return;
+        }
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME);
           }
-        }
-      } catch (_) {
-        // Standalone mode: check if user previously imported an Excel/JSON file into localStorage
-        const cached = localStorage.getItem('ox3000_custom_vocab_v1');
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed.items) && parsed.items.length > 0) {
-              VOCAB_LIST = parsed.items;
-              SOURCE_NAME = parsed.sourceName || "Tệp đã nạp";
-            }
-          } catch (e) {}
-        }
-      }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
     }
 
-    function saveCustomDatasetToCache(items, sourceName) {
+    async function idbPut(key, value) {
       try {
-        localStorage.setItem('ox3000_custom_vocab_v1', JSON.stringify({
-          sourceName,
-          items
-        }));
-      } catch (e) {
-        console.warn("LocalStorage quota exceeded for large custom dataset, keeping in memory.");
+        const db = await openVocabDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.put(value, key);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (err) {
+        console.warn('IndexedDB write fallback:', err);
+        return false;
       }
     }
 
-    // ==================== APPLICATION STATE ====================
+    async function idbGet(key) {
+      try {
+        const db = await openVocabDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, 'readonly');
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.get(key);
+          req.onsuccess = () => resolve(req.result ?? null);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (err) {
+        console.warn('IndexedDB read fallback:', err);
+        return null;
+      }
+    }
+
+    async function idbDelete(key) {
+      try {
+        const db = await openVocabDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.delete(key);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (err) {
+        return false;
+      }
+    }
+
+    // ==================== GLOBAL APPLICATION STATE ====================
     const DECK_SIZE = 100;
-    const STORAGE_PROGRESS_KEY = 'ox3000_deck_progress_v1';
+
+    let VOCAB_LIST = [...DEFAULT_OXFORD_DATASET];
+    let DATASET_META = {
+      isCustom: false,
+      filename: 'Oxford 3000 Mặc định',
+      savedAt: null,
+      count: VOCAB_LIST.length
+    };
 
     let state = {
-      deckIndex: 0,           // 0-based deck index (Deck 1 = 0)
-      deckWords: [],          // Current active array of up to 100 words
-      currentIndex: 0,        // Index inside deckWords
-      attemptsLeft: 3,        // 3 attempts per word
-      isFlipped: false,       // Card face state
-      isShadowMode: false,    // True after 3 failed attempts
-      autoMatch: true,        // Auto-verify as soon as exact letters match
-      missedInSession: [],    // Words that failed 3 times in current deck run
-      correctCount: 0,        // First-try or non-shadow correct count
-      totalTypedChars: 0,     // For live WPM calculation
+      deckIndex: 0,
+      deckWords: [],
+      currentIndex: 0,
+      attemptsLeft: 3,
+      isFlipped: false,
+      isShadowMode: false,
+      autoMatch: true,
+      speechRate: 1.0,
+      missedInSession: [],
+      correctCount: 0,
+      wrongCount: 0,
+      streak: 0,
+      totalTypedChars: 0,
       sessionStartTime: Date.now(),
       autoAdvanceTimer: null,
       autoAdvanceStart: 0,
-      autoAdvanceDuration: 1550,
-      progressMap: {}         // { deckIndex: { completed: number, total: number } }
+      autoAdvanceDuration: 1500,
+      // Per-set permanent progress: { [deckIndex]: { currentIndex, completed, total, wrongWords: [], bestWpm } }
+      progressMap: {}
     };
 
-    // ==================== DOM REFERENCES ====================
+    // ==================== DOM ELEMENTS ====================
     const dom = {
-      headerDeckTitle: document.getElementById('headerDeckTitle'),
-      headerDeckBadge: document.getElementById('headerDeckBadge'),
-      headerSourceLabel: document.getElementById('headerSourceLabel'),
+      storageStatusBadge: document.getElementById('storageStatusBadge'),
+      storageStatusDot: document.getElementById('storageStatusDot'),
+      storageStatusText: document.getElementById('storageStatusText'),
+      deckSelectDropdown: document.getElementById('deckSelectDropdown'),
       btnOpenDeckModal: document.getElementById('btnOpenDeckModal'),
+      btnToggleSpeed: document.getElementById('btnToggleSpeed'),
       btnToggleAutoMatch: document.getElementById('btnToggleAutoMatch'),
       autoMatchDot: document.getElementById('autoMatchDot'),
       btnShuffle: document.getElementById('btnShuffle'),
+      btnReviewWrongTop: document.getElementById('btnReviewWrongTop'),
+      topWrongBadge: document.getElementById('topWrongBadge'),
       fileImportInput: document.getElementById('fileImportInput'),
+      btnResetToDefault: document.getElementById('btnResetToDefault'),
+
       progressCounter: document.getElementById('progressCounter'),
-      statsAccuracy: document.getElementById('statsAccuracy'),
+      statCorrect: document.getElementById('statCorrect'),
+      statWrong: document.getElementById('statWrong'),
+      statStreak: document.getElementById('statStreak'),
       statsWpm: document.getElementById('statsWpm'),
       btnSkipWord: document.getElementById('btnSkipWord'),
       rafProgressBar: document.getElementById('rafProgressBar'),
@@ -737,7 +1018,7 @@
       cardShakeWrapper: document.getElementById('cardShakeWrapper'),
       flashcard3D: document.getElementById('flashcard3D'),
 
-      // Front face
+      // Front
       frontIndexPill: document.getElementById('frontIndexPill'),
       frontPosBadge: document.getElementById('frontPosBadge'),
       attemptDots: [
@@ -747,13 +1028,13 @@
       ],
       frontMeaningText: document.getElementById('frontMeaningText'),
       frontLetterCount: document.getElementById('frontLetterCount'),
-      btnPeekFirstLetter: document.getElementById('btnPeekFirstLetter'),
+      btnAudioHint: document.getElementById('btnAudioHint'),
       frontLiveFeedback: document.getElementById('frontLiveFeedback'),
       typingInputFront: document.getElementById('typingInputFront'),
       btnSubmitFront: document.getElementById('btnSubmitFront'),
       frontStatusMessage: document.getElementById('frontStatusMessage'),
 
-      // Back face
+      // Back
       backModeBadge: document.getElementById('backModeBadge'),
       btnSpeakWord: document.getElementById('btnSpeakWord'),
       btnSpeakExample: document.getElementById('btnSpeakExample'),
@@ -777,7 +1058,7 @@
       deckGridContainer: document.getElementById('deckGridContainer'),
       btnCloseDeckModal: document.getElementById('btnCloseDeckModal'),
       btnCloseDeckModalFooter: document.getElementById('btnCloseDeckModalFooter'),
-      btnResetAllProgress: document.getElementById('btnResetAllProgress'),
+      btnResetProgressOnly: document.getElementById('btnResetProgressOnly'),
 
       summaryModal: document.getElementById('summaryModal'),
       summaryTitle: document.getElementById('summaryTitle'),
@@ -793,7 +1074,7 @@
       toastInner: document.getElementById('toastInner')
     };
 
-    // ==================== WEB SPEECH API (NATURAL EN-US VOICE) ====================
+    // ==================== WEB SPEECH API (AUTO PRONUNCIATION) ====================
     let preferredVoice = null;
 
     function loadPreferredVoice() {
@@ -811,41 +1092,36 @@
       window.speechSynthesis.onvoiceschanged = loadPreferredVoice;
     }
 
-    function speakText(text, rate = 0.95, onComplete = null) {
+    function speakText(text, customRate = null, onComplete = null) {
       if (!('speechSynthesis' in window) || !text) {
-        if (onComplete) setTimeout(onComplete, 900);
+        if (onComplete) setTimeout(onComplete, 850);
         return;
       }
 
       window.speechSynthesis.cancel();
-
-      // Normalize "a / an" so TTS pronounces naturally
       const cleanSpeech = text.trim().toLowerCase() === 'a / an' ? 'a, or an' : text;
-
       const utterance = new SpeechSynthesisUtterance(cleanSpeech);
       if (preferredVoice) utterance.voice = preferredVoice;
       utterance.lang = 'en-US';
-      utterance.rate = rate;
+      utterance.rate = customRate ?? state.speechRate;
       utterance.pitch = 1.0;
 
       dom.audioWaveIcon.classList.add('speaking');
 
-      let finished = false;
-      const finishHandler = () => {
-        if (finished) return;
-        finished = true;
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
         dom.audioWaveIcon.classList.remove('speaking');
         if (onComplete) onComplete();
       };
 
-      utterance.onend = finishHandler;
-      utterance.onerror = finishHandler;
-
+      utterance.onend = finish;
+      utterance.onerror = finish;
       window.speechSynthesis.speak(utterance);
 
-      // Safety fallback in case browser speechSynthesis stalls
-      const fallbackMs = Math.max(1300, cleanSpeech.length * 95);
-      setTimeout(finishHandler, fallbackMs);
+      const fallbackMs = Math.max(1250, cleanSpeech.length * 90);
+      setTimeout(finish, fallbackMs);
     }
 
     // ==================== 120 FPS REQUESTANIMATIONFRAME LOOP ====================
@@ -854,18 +1130,16 @@
 
     function start120FpsRenderLoop() {
       function tick(now) {
-        // Smoothly interpolate top progress bar at display refresh rate (60/120Hz)
         const diff = targetProgressPct - currentProgressPct;
-        if (Math.abs(diff) > 0.05) {
-          currentProgressPct += diff * 0.22;
+        if (Math.abs(diff) > 0.04) {
+          currentProgressPct += diff * 0.24;
           dom.rafProgressBar.style.width = `${currentProgressPct.toFixed(2)}%`;
         }
 
-        // Smoothly animate auto-advance countdown bar on card back
         if (state.autoAdvanceTimer && state.autoAdvanceStart > 0) {
           const elapsed = now - state.autoAdvanceStart;
-          const remainingRatio = Math.max(0, 1 - elapsed / state.autoAdvanceDuration);
-          dom.autoAdvanceBar.style.width = `${(remainingRatio * 100).toFixed(2)}%`;
+          const ratio = Math.max(0, 1 - elapsed / state.autoAdvanceDuration);
+          dom.autoAdvanceBar.style.width = `${(ratio * 100).toFixed(2)}%`;
         }
 
         requestAnimationFrame(tick);
@@ -873,12 +1147,170 @@
       requestAnimationFrame(tick);
     }
 
-    // ==================== NORMALIZATION & ANSWER MATCHING ====================
+    // ==================== PERMANENT STORAGE SYNC (INDEXEDDB + LOCALSTORAGE) ====================
+    async function hydrateFromPermanentStorage() {
+      // 1. Restore custom uploaded dataset from IndexedDB if present
+      const savedCustom = await idbGet(CUSTOM_DATA_KEY);
+      if (savedCustom && Array.isArray(savedCustom.items) && savedCustom.items.length > 0) {
+        VOCAB_LIST = savedCustom.items;
+        DATASET_META = {
+          isCustom: true,
+          filename: savedCustom.filename || 'Tệp Excel đã lưu',
+          savedAt: savedCustom.savedAt || Date.now(),
+          count: savedCustom.items.length
+        };
+      } else {
+        // Fallback check localStorage mirror in case IndexedDB was cleared
+        try {
+          const lsBackup = localStorage.getItem('ox3000_custom_items_fallback');
+          if (lsBackup) {
+            const parsed = JSON.parse(lsBackup);
+            if (Array.isArray(parsed.items) && parsed.items.length > 0) {
+              VOCAB_LIST = parsed.items;
+              DATASET_META = {
+                isCustom: true,
+                filename: parsed.filename || 'Tệp đã lưu',
+                savedAt: parsed.savedAt || Date.now(),
+                count: parsed.items.length
+              };
+            }
+          }
+        } catch (_) {}
+      }
+
+      // 2. Restore progress map & last active set from IndexedDB / localStorage
+      const savedProgress = await idbGet(PROGRESS_DATA_KEY);
+      if (savedProgress && typeof savedProgress === 'object') {
+        state.progressMap = savedProgress.progressMap || {};
+        state.deckIndex = Number.isInteger(savedProgress.lastDeckIndex) ? savedProgress.lastDeckIndex : 0;
+        state.autoMatch = typeof savedProgress.autoMatch === 'boolean' ? savedProgress.autoMatch : true;
+        state.speechRate = typeof savedProgress.speechRate === 'number' ? savedProgress.speechRate : 1.0;
+      } else {
+        try {
+          const lsProg = localStorage.getItem(LS_PROGRESS_BACKUP_KEY);
+          if (lsProg) {
+            const parsed = JSON.parse(lsProg);
+            state.progressMap = parsed.progressMap || {};
+            state.deckIndex = Number.isInteger(parsed.lastDeckIndex) ? parsed.lastDeckIndex : 0;
+          }
+        } catch (_) {}
+      }
+
+      updateStorageBadgeUI();
+      updateSettingsButtonsUI();
+    }
+
+    async function persistProgressImmediately() {
+      const payload = {
+        progressMap: state.progressMap,
+        lastDeckIndex: state.deckIndex,
+        autoMatch: state.autoMatch,
+        speechRate: state.speechRate,
+        updatedAt: Date.now()
+      };
+      // Mirror to both IndexedDB and localStorage for 100% durability
+      try {
+        localStorage.setItem(LS_PROGRESS_BACKUP_KEY, JSON.stringify(payload));
+      } catch (_) {}
+      await idbPut(PROGRESS_DATA_KEY, payload);
+    }
+
+    function updateStorageBadgeUI() {
+      if (DATASET_META.isCustom) {
+        dom.storageStatusBadge.className = 'inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-sage-100 text-sage-600 border border-sage-500/30 truncate max-w-[200px] sm:max-w-[290px]';
+        dom.storageStatusDot.className = 'w-1.5 h-1.5 rounded-full bg-sage-500 shrink-0';
+        dom.storageStatusText.textContent = `Đã lưu: ${DATASET_META.filename} • ${DATASET_META.count.toLocaleString()} từ`;
+        dom.btnResetToDefault.classList.remove('hidden');
+        dom.btnResetToDefault.classList.add('flex');
+      } else {
+        dom.storageStatusBadge.className = 'inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-paper-200/80 text-navy-800 truncate max-w-[200px] sm:max-w-[290px]';
+        dom.storageStatusDot.className = 'w-1.5 h-1.5 rounded-full bg-terracotta-500 shrink-0';
+        dom.storageStatusText.textContent = `Dữ liệu mặc định (${VOCAB_LIST.length.toLocaleString()} từ)`;
+        dom.btnResetToDefault.classList.add('hidden');
+        dom.btnResetToDefault.classList.remove('flex');
+      }
+    }
+
+    function updateSettingsButtonsUI() {
+      dom.btnToggleSpeed.textContent = `${state.speechRate.toFixed(1)}x`;
+      if (state.autoMatch) {
+        dom.btnToggleAutoMatch.className = 'flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-sage-100 border-sage-500/30 text-sage-600';
+        dom.autoMatchDot.className = 'w-1.5 h-1.5 rounded-full bg-sage-500';
+      } else {
+        dom.btnToggleAutoMatch.className = 'flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-white border-paper-300 text-slate-600';
+        dom.autoMatchDot.className = 'w-1.5 h-1.5 rounded-full bg-slate-400';
+      }
+    }
+
+    // ==================== DECK / SET MANAGEMENT (100 WORDS PER SET) ====================
+    function getTotalDecks() {
+      return Math.max(1, Math.ceil(VOCAB_LIST.length / DECK_SIZE));
+    }
+
+    function populateDeckDropdown() {
+      const totalDecks = getTotalDecks();
+      dom.deckSelectDropdown.innerHTML = '';
+
+      for (let i = 0; i < totalDecks; i++) {
+        const start = i * DECK_SIZE + 1;
+        const end = Math.min((i + 1) * DECK_SIZE, VOCAB_LIST.length);
+        const count = end - start + 1;
+        const prog = state.progressMap[i];
+        const done = prog ? Math.min(prog.completed || 0, count) : 0;
+        const pct = Math.round((done / count) * 100);
+
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = `Bộ ${i + 1} (${start} – ${end}) • ${pct}%`;
+        if (i === state.deckIndex) opt.selected = true;
+        dom.deckSelectDropdown.appendChild(opt);
+      }
+    }
+
+    function selectDeck(deckIdx, customReviewSubset = null, resumeSavedIndex = false) {
+      clearAutoAdvance();
+      const totalDecks = getTotalDecks();
+      state.deckIndex = Math.min(Math.max(0, deckIdx), totalDecks - 1);
+
+      if (customReviewSubset) {
+        state.deckWords = [...customReviewSubset];
+        state.currentIndex = 0;
+      } else {
+        const start = state.deckIndex * DECK_SIZE;
+        const end = Math.min(start + DECK_SIZE, VOCAB_LIST.length);
+        state.deckWords = VOCAB_LIST.slice(start, end);
+
+        const savedProg = state.progressMap[state.deckIndex];
+        if (resumeSavedIndex && savedProg && savedProg.currentIndex > 0 && savedProg.currentIndex < state.deckWords.length) {
+          state.currentIndex = savedProg.currentIndex;
+        } else {
+          state.currentIndex = 0;
+        }
+      }
+
+      state.missedInSession = [];
+      state.correctCount = 0;
+      state.wrongCount = 0;
+      state.streak = 0;
+      state.totalTypedChars = 0;
+      state.sessionStartTime = Date.now();
+
+      populateDeckDropdown();
+      updateTopWrongBadge();
+      persistProgressImmediately();
+      loadCurrentCard(true);
+    }
+
+    function updateTopWrongBadge() {
+      const savedProg = state.progressMap[state.deckIndex];
+      const savedWrongCount = savedProg?.wrongWords?.length || 0;
+      const totalWrong = Math.max(state.missedInSession.length, savedWrongCount);
+      dom.topWrongBadge.textContent = String(totalWrong);
+    }
+
+    // ==================== WORD MATCHING & NORMALIZATION ====================
     function normalizeWord(str) {
-      return String(str || '')
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, ' ');
+      return String(str || '').toLowerCase().trim().replace(/\s+/g, ' ');
     }
 
     function isAnswerMatch(userInput, targetWord) {
@@ -886,12 +1318,10 @@
       const t = normalizeWord(targetWord);
       if (!u) return false;
 
-      // Special handling for "a / an"
       if (t === 'a / an' || t === 'a/an') {
         return u === 'a' || u === 'an' || u === 'a / an' || u === 'a/an';
       }
 
-      // Allow parenthetical optional parts if present, e.g. "colour (color)"
       if (t.includes('(')) {
         const base = t.replace(/\s*\(.*?\)\s*/g, '').trim();
         if (u === base) return true;
@@ -901,71 +1331,10 @@
     }
 
     function getCanonicalTarget(targetWord) {
-      const t = normalizeWord(targetWord);
-      if (t === 'a / an') return 'a / an';
       return targetWord.trim();
     }
 
-    // ==================== DECK & PROGRESS MANAGEMENT ====================
-    function loadProgressFromStorage() {
-      try {
-        const raw = localStorage.getItem(STORAGE_PROGRESS_KEY);
-        state.progressMap = raw ? JSON.parse(raw) : {};
-      } catch (e) {
-        state.progressMap = {};
-      }
-    }
-
-    function saveProgressToStorage() {
-      try {
-        localStorage.setItem(STORAGE_PROGRESS_KEY, JSON.stringify(state.progressMap));
-      } catch (e) {}
-    }
-
-    function getTotalDecks() {
-      return Math.max(1, Math.ceil(VOCAB_LIST.length / DECK_SIZE));
-    }
-
-    function selectDeck(deckIdx, customWordSubset = null) {
-      clearAutoAdvance();
-      const totalDecks = getTotalDecks();
-      state.deckIndex = Math.min(Math.max(0, deckIdx), totalDecks - 1);
-
-      if (customWordSubset) {
-        state.deckWords = [...customWordSubset];
-      } else {
-        const start = state.deckIndex * DECK_SIZE;
-        const end = Math.min(start + DECK_SIZE, VOCAB_LIST.length);
-        state.deckWords = VOCAB_LIST.slice(start, end);
-      }
-
-      state.currentIndex = 0;
-      state.missedInSession = [];
-      state.correctCount = 0;
-      state.totalTypedChars = 0;
-      state.sessionStartTime = Date.now();
-
-      updateHeaderInfo(!!customWordSubset);
-      loadCurrentCard(true);
-    }
-
-    function updateHeaderInfo(isReviewSubset = false) {
-      const startNum = state.deckIndex * DECK_SIZE + 1;
-      const endNum = Math.min((state.deckIndex + 1) * DECK_SIZE, VOCAB_LIST.length);
-
-      if (isReviewSubset) {
-        dom.headerDeckTitle.textContent = `Ôn từ sai (${state.deckWords.length} từ)`;
-      } else {
-        dom.headerDeckTitle.textContent = `Bộ ${state.deckIndex + 1} (${startNum} – ${endNum})`;
-      }
-
-      const prog = state.progressMap[state.deckIndex];
-      const pct = prog && prog.total > 0 ? Math.round((prog.completed / prog.total) * 100) : 0;
-      dom.headerDeckBadge.textContent = `${pct}%`;
-      dom.headerSourceLabel.textContent = `${SOURCE_NAME} • ${VOCAB_LIST.length.toLocaleString()} từ`;
-    }
-
-    // ==================== CARD RENDERING & FLIP TRANSITIONS ====================
+    // ==================== CARD RENDERING & 120 FPS FLIP ====================
     function loadCurrentCard(instantReset = false) {
       clearAutoAdvance();
 
@@ -981,40 +1350,40 @@
       state.isFlipped = false;
       state.isShadowMode = false;
 
-      // Snap card back to front without animation if transitioning between cards
       if (instantReset) {
         dom.flashcard3D.classList.add('no-transition');
         dom.flashcard3D.classList.remove('is-flipped');
-        // Force reflow
         void dom.flashcard3D.offsetWidth;
         dom.flashcard3D.classList.remove('no-transition');
       } else {
         dom.flashcard3D.classList.remove('is-flipped');
       }
 
-      // Update Front Face
       const totalInDeck = state.deckWords.length;
       dom.frontIndexPill.textContent = `#${state.currentIndex + 1} / ${totalInDeck}`;
       dom.frontPosBadge.textContent = pos || 'word';
       dom.frontPosBadge.style.display = pos ? 'inline-block' : 'none';
 
-      // Adjust Vietnamese font class dynamically for extra long meanings
-      dom.frontMeaningText.textContent = meaning || '(Chưa có nghĩa)';
-      if ((meaning || '').length > 55) {
+      dom.frontMeaningText.textContent = meaning || '(Chưa có nghĩa tiếng Việt)';
+      if ((meaning || '').length > 52) {
         dom.frontMeaningText.className = 'fluid-vi-meaning-long font-serif font-bold text-navy-900 break-words max-w-full';
       } else {
         dom.frontMeaningText.className = 'fluid-vi-meaning font-serif font-bold text-navy-900 break-words max-w-full';
       }
 
       const cleanLen = word.trim().toLowerCase() === 'a / an' ? '1–2' : word.trim().length;
-      dom.frontLetterCount.textContent = `${cleanLen} ký tự`;
+      dom.frontLetterCount.textContent = `${cleanLen} chữ cái`;
 
       updateAttemptDots();
       dom.typingInputFront.value = '';
       dom.frontLiveFeedback.innerHTML = '';
-      dom.frontStatusMessage.innerHTML = 'Nhấn <kbd class="px-1.5 py-0.5 bg-paper-200 rounded text-navy-800 font-mono text-[10px]">Enter</kbd> để kiểm tra • Gõ sai 3 lần sẽ lật thẻ gợi ý';
+      dom.frontStatusMessage.innerHTML = `
+        <kbd class="px-1.5 py-0.5 bg-paper-100 border border-paper-200 rounded text-navy-800 font-mono text-[10px]">Enter</kbd> kiểm tra •
+        <kbd class="px-1.5 py-0.5 bg-paper-100 border border-paper-200 rounded text-navy-800 font-mono text-[10px]">Ctrl+Space</kbd> nghe gợi ý •
+        <kbd class="px-1.5 py-0.5 bg-paper-100 border border-paper-200 rounded text-navy-800 font-mono text-[10px]">Esc</kbd> bỏ qua
+      `;
 
-      // Pre-populate Back Face (so 3D flip is already ready at 120fps)
+      // Pre-populate Back Face for instant 120 FPS flip
       dom.backEnglishWord.textContent = word;
       dom.backPosBadge.textContent = pos || '';
       dom.backIpaText.textContent = ipa || '';
@@ -1028,12 +1397,10 @@
         dom.backExampleBox.classList.add('hidden');
       }
 
-      // Update Progress & Stats
       targetProgressPct = ((state.currentIndex + 1) / totalInDeck) * 100;
       dom.progressCounter.textContent = `${state.currentIndex + 1} / ${totalInDeck}`;
       updateLiveStats();
 
-      // Focus front input smoothly
       requestAnimationFrame(() => {
         dom.typingInputFront.focus({ preventScroll: true });
       });
@@ -1052,22 +1419,20 @@
     }
 
     function updateLiveStats() {
-      const attempted = state.currentIndex;
-      const acc = attempted === 0 ? 100 : Math.round((state.correctCount / attempted) * 100);
-      dom.statsAccuracy.textContent = `Chính xác: ${acc}%`;
+      dom.statCorrect.textContent = String(state.correctCount);
+      dom.statWrong.textContent = String(state.wrongCount);
+      dom.statStreak.textContent = String(state.streak);
 
       const elapsedMin = Math.max((Date.now() - state.sessionStartTime) / 60000, 0.05);
-      const wpm = Math.round((state.totalTypedChars / 5) / elapsedMin);
-      dom.statsWpm.textContent = `${Math.min(wpm, 220)} WPM`;
+      const wpm = Math.min(Math.round((state.totalTypedChars / 5) / elapsedMin), 220);
+      dom.statsWpm.textContent = `${wpm} WPM`;
     }
 
-    // ==================== REAL-TIME CHARACTER FEEDBACK ====================
     function renderLiveCharDiff(typed, targetWord) {
       if (!typed) {
         dom.frontLiveFeedback.innerHTML = '';
         return;
       }
-
       const target = targetWord.trim().toLowerCase() === 'a / an'
         ? (typed.trim().toLowerCase().startsWith('an') ? 'an' : 'a')
         : targetWord.trim();
@@ -1080,7 +1445,7 @@
         if (expected && ch.toLowerCase() === expected.toLowerCase()) {
           html += `<span class="text-sage-600">${displayCh}</span>`;
         } else {
-          html += `<span class="text-rose-600 underline decoration-2">${displayCh}</span>`;
+          html += `<span class="text-crimson-600 underline decoration-2">${displayCh}</span>`;
         }
       }
       dom.frontLiveFeedback.innerHTML = html;
@@ -1092,20 +1457,16 @@
       }[m]));
     }
 
-    // ==================== ANSWER VERIFICATION & 3-MISTAKE FLIP LOGIC ====================
+    // ==================== TYPING LOGIC & 3-MISTAKE SHADOW FLIP ====================
     function handleFrontTypingInput() {
       const item = state.deckWords[state.currentIndex];
       if (!item || state.isFlipped) return;
 
       const targetWord = item[0];
       const val = dom.typingInputFront.value;
-
       renderLiveCharDiff(val, targetWord);
 
-      // Auto-Match: if enabled and typed string matches the full word accurately
       if (state.autoMatch && isAnswerMatch(val, targetWord)) {
-        // Avoid premature auto-match on "a" if the user is typing a longer word?
-        // Here targetWord itself is "a / an", so "a" is valid!
         onCorrectFrontAnswer();
       }
     }
@@ -1136,12 +1497,12 @@
       state.isFlipped = true;
       state.isShadowMode = false;
       state.correctCount++;
+      state.streak++;
       state.totalTypedChars += word.length;
 
-      // Record deck progress
-      recordWordCompleted();
+      saveWordStepProgress(false, item);
+      updateLiveStats();
 
-      // Configure Back Face for Celebratory Reveal & Auto-Advance
       dom.backModeBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sage-500/20 text-emerald-300 border border-emerald-400/30';
       dom.backModeBadge.innerHTML = `
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1152,10 +1513,8 @@
       dom.shadowTypingContainer.classList.add('hidden');
       dom.autoAdvanceContainer.classList.remove('hidden');
 
-      // Flip card 180deg via GPU
       dom.flashcard3D.classList.add('is-flipped');
 
-      // Speak English word automatically and advance after speech + brief pause
       let speechDone = false;
       let timerDone = false;
 
@@ -1165,12 +1524,12 @@
         }
       };
 
-      speakText(word, 0.95, () => {
+      speakText(word, state.speechRate, () => {
         speechDone = true;
         tryAdvance();
       });
 
-      state.autoAdvanceDuration = 1350;
+      state.autoAdvanceDuration = 1400;
       state.autoAdvanceStart = performance.now();
       state.autoAdvanceTimer = setTimeout(() => {
         timerDone = true;
@@ -1180,14 +1539,16 @@
 
     function onWrongFrontAnswer() {
       state.attemptsLeft = Math.max(0, state.attemptsLeft - 1);
+      state.streak = 0;
       updateAttemptDots();
+      updateLiveStats();
       triggerCardShake();
 
       if (state.attemptsLeft > 0) {
-        dom.frontStatusMessage.innerHTML = `<span class="text-rose-600 font-bold">Chưa chính xác!</span> Còn <span class="font-mono font-bold text-navy-900">${state.attemptsLeft}</span> lần thử nữa.`;
+        dom.frontStatusMessage.innerHTML = `<span class="text-crimson-600 font-bold">Chưa chính xác!</span> Còn <span class="font-mono font-bold text-navy-900">${state.attemptsLeft}</span> lượt thử nữa.`;
         dom.typingInputFront.select();
       } else {
-        // 3 MISTAKES REACHED -> FLIP CARD TO BACK FOR SHADOW TYPING!
+        // 3 MISTAKES -> FLIP TO BACK FOR SHADOW TYPING
         enterShadowTypingMode();
       }
     }
@@ -1198,14 +1559,15 @@
 
       state.isFlipped = true;
       state.isShadowMode = true;
+      state.wrongCount++;
+      updateLiveStats();
 
-      // Track word in missed list if not already added
       if (!state.missedInSession.some(w => w[0] === word)) {
         state.missedInSession.push(item);
       }
+      saveWordStepProgress(true, item);
 
-      // Configure Back Face for Shadow Typing
-      dom.backModeBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-terracotta-500/25 text-amber-300 border border-terracotta-500/50';
+      dom.backModeBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-crimson-500/25 text-amber-300 border border-terracotta-500/50';
       dom.backModeBadge.innerHTML = `
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -1216,15 +1578,11 @@
       dom.autoAdvanceContainer.classList.add('hidden');
       dom.shadowTypingContainer.classList.remove('hidden');
 
-      const displayTarget = getCanonicalTarget(word);
-      dom.shadowGhostText.textContent = displayTarget;
+      dom.shadowGhostText.textContent = getCanonicalTarget(word);
       dom.typingInputShadow.value = '';
 
-      // Flip card 180deg to reveal English word + IPA + Shadow Input
       dom.flashcard3D.classList.add('is-flipped');
-
-      // Pronounce word so learner hears it while typing along
-      speakText(word, 0.9);
+      speakText(word, state.speechRate * 0.92);
 
       setTimeout(() => {
         dom.typingInputShadow.focus({ preventScroll: true });
@@ -1238,7 +1596,6 @@
       const typed = dom.typingInputShadow.value;
       const ghostTarget = getCanonicalTarget(word);
 
-      // Update ghost overlay so already-typed prefix doesn't clash visually
       if (typed.length <= ghostTarget.length) {
         const remainingGhost = '\u00A0'.repeat(typed.length) + ghostTarget.slice(typed.length);
         dom.shadowGhostText.textContent = remainingGhost;
@@ -1246,33 +1603,47 @@
         dom.shadowGhostText.textContent = '';
       }
 
-      // Check if user finished typing the shadow word properly
       if (isAnswerMatch(typed, word)) {
         state.isShadowMode = false;
         state.totalTypedChars += word.length;
-        recordWordCompleted();
+        saveWordStepProgress(false, item);
 
         dom.shadowTypingContainer.classList.add('hidden');
         dom.autoAdvanceContainer.classList.remove('hidden');
         dom.backModeBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sage-500/20 text-emerald-300 border border-emerald-400/30';
-        dom.backModeBadge.innerHTML = `<span>Đã ghi nhớ! Chuyển từ tiếp theo...</span>`;
+        dom.backModeBadge.innerHTML = `<span>Đã ghi nhớ! Đang phát âm & chuyển từ...</span>`;
 
-        speakText(word, 0.95, () => {
+        speakText(word, state.speechRate, () => {
           setTimeout(() => advanceToNextCard(), 350);
         });
       }
     }
 
-    function recordWordCompleted() {
-      const completedSoFar = state.currentIndex + 1;
+    function saveWordStepProgress(wasWrong, item) {
       const total = state.deckWords.length;
-      const prev = state.progressMap[state.deckIndex] || { completed: 0, total };
-      state.progressMap[state.deckIndex] = {
-        completed: Math.max(prev.completed, completedSoFar),
-        total
+      const nextIdx = Math.min(state.currentIndex + 1, total);
+      const prev = state.progressMap[state.deckIndex] || {
+        currentIndex: 0,
+        completed: 0,
+        total,
+        wrongWords: []
       };
-      saveProgressToStorage();
-      updateHeaderInfo();
+
+      const wrongList = Array.isArray(prev.wrongWords) ? [...prev.wrongWords] : [];
+      if (wasWrong && item && !wrongList.some(w => w[0] === item[0])) {
+        wrongList.push(item);
+      }
+
+      state.progressMap[state.deckIndex] = {
+        currentIndex: nextIdx,
+        completed: Math.max(prev.completed || 0, nextIdx),
+        total,
+        wrongWords: wrongList
+      };
+
+      updateTopWrongBadge();
+      populateDeckDropdown();
+      persistProgressImmediately();
     }
 
     function advanceToNextCard() {
@@ -1295,31 +1666,23 @@
       dom.cardShakeWrapper.classList.add('shake-gpu');
     }
 
-    // ==================== SHUFFLE & PEEK HELPERS ====================
-    function shuffleCurrentDeck() {
-      for (let i = state.deckWords.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [state.deckWords[i], state.deckWords[j]] = [state.deckWords[j], state.deckWords[i]];
-      }
-      state.currentIndex = 0;
-      state.missedInSession = [];
-      state.correctCount = 0;
-      state.sessionStartTime = Date.now();
-      loadCurrentCard(true);
-      showToast("Đã xáo trộn ngẫu nhiên các từ trong bộ!");
+    // ==================== EXCEL / CSV / JSON PARSER + PERMANENT SAVE ====================
+    function normalizeObjectRow(row) {
+      const keys = Object.keys(row);
+      const findVal = (patterns) => {
+        const key = keys.find(k => patterns.some(p => k.toLowerCase().trim().includes(p)));
+        return key ? String(row[key] ?? '').trim() : '';
+      };
+
+      const word = findVal(['từ vựng', 'tu vung', 'word', 'vocabulary', 'english', 'term']) || String(Object.values(row)[1] || Object.values(row)[0] || '').trim();
+      const ipa = findVal(['ipa', 'phiên âm', 'phien am', 'phonetic', 'pronunciation']);
+      const pos = findVal(['từ loại', 'tu loai', 'loại từ', 'pos', 'part of speech', 'type']);
+      const meaning = findVal(['nghĩa tiếng việt', 'nghĩa', 'nghia', 'meaning', 'vietnamese', 'translation']) || String(Object.values(row)[4] || Object.values(row)[2] || '').trim();
+      const example = findVal(['câu ví dụ', 'ví dụ', 'vi du', 'example', 'sentence', 'context']);
+
+      return [word, ipa, pos, meaning, example];
     }
 
-    function peekFirstLetter() {
-      const item = state.deckWords[state.currentIndex];
-      if (!item || state.isFlipped) return;
-      const word = item[0].trim();
-      const firstChar = word.toLowerCase() === 'a / an' ? 'a' : word[0];
-      dom.typingInputFront.value = firstChar;
-      dom.typingInputFront.focus();
-      renderLiveCharDiff(firstChar, word);
-    }
-
-    // ==================== EXCEL / CSV / JSON FILE IMPORTER (SHEETJS) ====================
     function handleFileUpload(event) {
       const file = event.target.files?.[0];
       if (!file) return;
@@ -1327,7 +1690,7 @@
       const reader = new FileReader();
       const ext = file.name.split('.').pop().toLowerCase();
 
-      reader.onload = function (e) {
+      reader.onload = async function (e) {
         try {
           let parsedVocab = [];
 
@@ -1350,35 +1713,60 @@
               }).filter(r => r && r[0] && r[3]);
             }
           } else {
-            // Parse Excel (.xlsx, .xls) or .csv via SheetJS
+            // Read ALL sheets in Excel (.xlsx, .xls) or CSV
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
-            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
 
-            parsedVocab = rows
-              .map(normalizeObjectRow)
-              .filter(r => r && r[0] && r[3]);
+            workbook.SheetNames.forEach(sheetName => {
+              const sheet = workbook.Sheets[sheetName];
+              const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+              const sheetItems = rows
+                .map(normalizeObjectRow)
+                .filter(r => r && r[0] && r[3] && r[0].toLowerCase() !== 'từ vựng' && r[0].toLowerCase() !== 'word');
+              parsedVocab.push(...sheetItems);
+            });
           }
 
           if (parsedVocab.length === 0) {
-            showToast("Không tìm thấy cột từ vựng & nghĩa tiếng Việt hợp lệ!");
+            showToast('Không tìm thấy cột Từ vựng & Nghĩa tiếng Việt hợp lệ trong file!');
             return;
           }
 
+          const cleanFilename = file.name.replace(/\.[^/.]+$/, '');
+          const savedAt = Date.now();
+
           VOCAB_LIST = parsedVocab;
-          SOURCE_NAME = file.name.replace(/\.[^/.]+$/, "");
-          saveCustomDatasetToCache(VOCAB_LIST, SOURCE_NAME);
+          DATASET_META = {
+            isCustom: true,
+            filename: cleanFilename,
+            savedAt,
+            count: parsedVocab.length
+          };
 
-          // Reset progress for newly uploaded file
+          // Save permanently to IndexedDB + localStorage fallback
+          const dbPayload = {
+            filename: cleanFilename,
+            savedAt,
+            items: parsedVocab
+          };
+          await idbPut(CUSTOM_DATA_KEY, dbPayload);
+          try {
+            localStorage.setItem('ox3000_custom_items_fallback', JSON.stringify(dbPayload));
+          } catch (_) {
+            // Large 3,361-word files fit easily in IndexedDB even if localStorage hits 5MB quota
+          }
+
+          // Reset progress map for the newly imported dataset
           state.progressMap = {};
-          saveProgressToStorage();
+          state.deckIndex = 0;
+          await persistProgressImmediately();
 
-          initDecksAndRender(true);
-          showToast(`Đã nạp thành công ${VOCAB_LIST.length.toLocaleString()} từ từ "${file.name}"!`);
+          updateStorageBadgeUI();
+          selectDeck(0, null, false);
+          showToast(`Đã lưu vĩnh viễn ${parsedVocab.length.toLocaleString()} từ (${getTotalDecks()} bộ) từ "${file.name}"!`);
         } catch (err) {
           console.error(err);
-          showToast("Lỗi đọc tệp. Vui lòng kiểm tra định dạng Excel/CSV/JSON.");
+          showToast('Lỗi đọc tệp Excel/CSV/JSON. Vui lòng kiểm tra định dạng file.');
         } finally {
           event.target.value = '';
         }
@@ -1391,26 +1779,33 @@
       }
     }
 
-    function normalizeObjectRow(row) {
-      const keys = Object.keys(row);
-      const findVal = (patterns) => {
-        const key = keys.find(k => patterns.some(p => k.toLowerCase().trim().includes(p)));
-        return key ? String(row[key] ?? '').trim() : '';
+    async function resetToDefaultDataset() {
+      await idbDelete(CUSTOM_DATA_KEY);
+      await idbDelete(PROGRESS_DATA_KEY);
+      try {
+        localStorage.removeItem('ox3000_custom_items_fallback');
+        localStorage.removeItem(LS_PROGRESS_BACKUP_KEY);
+      } catch (_) {}
+
+      VOCAB_LIST = [...DEFAULT_OXFORD_DATASET];
+      DATASET_META = {
+        isCustom: false,
+        filename: 'Oxford 3000 Mặc định',
+        savedAt: null,
+        count: VOCAB_LIST.length
       };
+      state.progressMap = {};
+      state.deckIndex = 0;
 
-      const word = findVal(['word', 'vocabulary', 'english', 'từ vựng', 'tu vung', 'term']) || String(Object.values(row)[0] || '').trim();
-      const ipa = findVal(['ipa', 'phonetic', 'pronunciation', 'phiên âm', 'phien am']);
-      const pos = findVal(['pos', 'part of speech', 'type', 'từ loại', 'tu loai', 'loại từ']);
-      const meaning = findVal(['meaning', 'vietnamese', 'nghĩa', 'nghia', 'tiếng việt', 'translation']) || String(Object.values(row)[1] || '').trim();
-      const example = findVal(['example', 'sentence', 'ví dụ', 'vi du', 'context']);
-
-      return [word, ipa, pos, meaning, example];
+      updateStorageBadgeUI();
+      selectDeck(0, null, false);
+      showToast('Đã khôi phục bộ dữ liệu mặc định Oxford 3000!');
     }
 
-    // ==================== MODALS: DECK SELECTOR & SUMMARY ====================
+    // ==================== MODALS: ALL SETS & END-OF-SET SUMMARY ====================
     function openDeckModal() {
       const totalDecks = getTotalDecks();
-      dom.deckModalSubtitle.textContent = `Tổng cộng ${VOCAB_LIST.length.toLocaleString()} từ chia thành ${totalDecks} bộ (100 từ/bộ)`;
+      dom.deckModalSubtitle.textContent = `Tổng cộng ${VOCAB_LIST.length.toLocaleString()} từ • ${totalDecks} bộ (100 từ/bộ) — Lưu vĩnh viễn`;
       dom.deckGridContainer.innerHTML = '';
 
       for (let i = 0; i < totalDecks; i++) {
@@ -1418,7 +1813,7 @@
         const end = Math.min((i + 1) * DECK_SIZE, VOCAB_LIST.length);
         const count = end - start + 1;
         const prog = state.progressMap[i];
-        const completed = prog ? Math.min(prog.completed, count) : 0;
+        const completed = prog ? Math.min(prog.completed || 0, count) : 0;
         const pct = Math.round((completed / count) * 100);
         const isActive = i === state.deckIndex;
 
@@ -1426,7 +1821,7 @@
         btn.type = 'button';
         btn.className = `text-left p-3 rounded-2xl border transition-all active:scale-95 ${
           isActive
-            ? 'bg-navy-900 text-paper-50 border-navy-900 shadow-md'
+            ? 'bg-navy-800 text-paper-50 border-navy-800 shadow-md'
             : 'bg-white hover:bg-paper-100 text-navy-900 border-paper-200'
         }`;
 
@@ -1450,7 +1845,7 @@
         `;
 
         btn.addEventListener('click', () => {
-          selectDeck(i);
+          selectDeck(i, null, true);
           closeDeckModal();
         });
 
@@ -1483,7 +1878,7 @@
         dom.btnPracticeMissed.classList.add('hidden');
         dom.summaryMissedList.innerHTML = `
           <div class="p-4 rounded-2xl bg-sage-100/70 border border-sage-500/20 text-center text-xs sm:text-sm text-sage-600 font-semibold">
-            Tuyệt vời! Bạn không bị sai quá 3 lần ở bất kỳ từ nào trong bộ này.
+            Xuất sắc! Bạn không bị sai quá 3 lần ở từ nào trong bộ này.
           </div>
         `;
       } else {
@@ -1518,7 +1913,7 @@
       dom.summaryModal.classList.remove('flex');
     }
 
-    // ==================== TOAST HELPER ====================
+    // ==================== HELPERS & EVENT LISTENERS ====================
     let toastTimeout = null;
     function showToast(msg) {
       dom.toastInner.textContent = msg;
@@ -1526,7 +1921,7 @@
       clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
         dom.toastBanner.classList.add('opacity-0');
-      }, 2800);
+      }, 3000);
     }
 
     function focusActiveInput() {
@@ -1537,24 +1932,38 @@
       }
     }
 
-    // ==================== EVENT LISTENERS ====================
+    function shuffleCurrentDeck() {
+      for (let i = state.deckWords.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [state.deckWords[i], state.deckWords[j]] = [state.deckWords[j], state.deckWords[i]];
+      }
+      state.currentIndex = 0;
+      state.missedInSession = [];
+      state.correctCount = 0;
+      state.wrongCount = 0;
+      state.streak = 0;
+      state.sessionStartTime = Date.now();
+      loadCurrentCard(true);
+      showToast('Đã xáo trộn ngẫu nhiên các từ trong bộ hiện tại!');
+    }
+
     function bindEvents() {
-      // Typing inputs
       dom.typingInputFront.addEventListener('input', handleFrontTypingInput);
       dom.typingInputFront.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
           submitFrontAnswer();
-        } else if (e.key === 'Tab') {
-          e.preventDefault();
-          peekFirstLetter();
         }
       });
 
       dom.btnSubmitFront.addEventListener('click', submitFrontAnswer);
-      dom.btnPeekFirstLetter.addEventListener('click', peekFirstLetter);
 
-      // Shadow typing input
+      dom.btnAudioHint.addEventListener('click', () => {
+        const item = state.deckWords[state.currentIndex];
+        if (item) speakText(item[0]);
+        focusActiveInput();
+      });
+
       dom.typingInputShadow.addEventListener('input', handleShadowTypingInput);
       dom.typingInputShadow.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -1563,24 +1972,27 @@
         }
       });
 
-      // Global shortcuts (Ctrl = replay word, Alt = speak example)
+      // Global keyboard shortcuts: Ctrl+Space (audio), Esc (skip), Enter/Space on flipped non-shadow card (next)
       window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        if (e.ctrlKey && e.code === 'Space') {
+          e.preventDefault();
           const item = state.deckWords[state.currentIndex];
-          if (item && state.isFlipped) {
+          if (item) speakText(item[0]);
+        } else if (e.key === 'Escape') {
+          if (!dom.deckModal.classList.contains('hidden')) {
+            closeDeckModal();
+          } else if (!dom.summaryModal.classList.contains('hidden')) {
+            closeSummaryModal();
+          } else {
             e.preventDefault();
-            speakText(item[0]);
+            skipCurrentWord();
           }
-        } else if (e.altKey && !e.ctrlKey && !e.metaKey) {
-          const item = state.deckWords[state.currentIndex];
-          if (item && state.isFlipped && item[4]) {
-            e.preventDefault();
-            speakText(item[4], 0.92);
-          }
+        } else if ((e.key === 'Enter' || e.code === 'Space') && state.isFlipped && !state.isShadowMode) {
+          e.preventDefault();
+          advanceToNextCard();
         }
       });
 
-      // Audio buttons on card back
       dom.btnSpeakWord.addEventListener('click', () => {
         const item = state.deckWords[state.currentIndex];
         if (item) speakText(item[0]);
@@ -1589,39 +2001,65 @@
 
       dom.btnSpeakExample.addEventListener('click', () => {
         const item = state.deckWords[state.currentIndex];
-        if (item && item[4]) speakText(item[4], 0.92);
+        if (item && item[4]) speakText(item[4], state.speechRate * 0.94);
         focusActiveInput();
       });
 
       dom.btnNextImmediate.addEventListener('click', advanceToNextCard);
 
-      dom.btnSkipWord.addEventListener('click', () => {
+      function skipCurrentWord() {
         const item = state.deckWords[state.currentIndex];
-        if (item && !state.missedInSession.some(w => w[0] === item[0])) {
-          state.missedInSession.push(item);
+        if (item) {
+          if (!state.missedInSession.some(w => w[0] === item[0])) {
+            state.missedInSession.push(item);
+          }
+          saveWordStepProgress(true, item);
         }
         advanceToNextCard();
+      }
+      dom.btnSkipWord.addEventListener('click', skipCurrentWord);
+
+      dom.deckSelectDropdown.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.value, 10) || 0;
+        selectDeck(idx, null, true);
       });
 
-      // Top bar controls
+      dom.btnToggleSpeed.addEventListener('click', () => {
+        state.speechRate = state.speechRate === 1.0 ? 0.8 : 1.0;
+        updateSettingsButtonsUI();
+        persistProgressImmediately();
+        showToast(`Tốc độ phát âm: ${state.speechRate.toFixed(1)}x`);
+        focusActiveInput();
+      });
+
       dom.btnToggleAutoMatch.addEventListener('click', () => {
         state.autoMatch = !state.autoMatch;
-        if (state.autoMatch) {
-          dom.btnToggleAutoMatch.className = 'flex items-center gap-1.5 px-2.5 py-2 sm:px-3 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-sage-100 border-sage-500/30 text-sage-600';
-          dom.autoMatchDot.className = 'w-2 h-2 rounded-full bg-sage-500';
-          showToast("Đã bật chế độ Tự khớp ngay khi gõ đúng");
-        } else {
-          dom.btnToggleAutoMatch.className = 'flex items-center gap-1.5 px-2.5 py-2 sm:px-3 rounded-xl border text-xs font-semibold transition-all active:scale-95 bg-paper-50 border-paper-300 text-slate-600';
-          dom.autoMatchDot.className = 'w-2 h-2 rounded-full bg-slate-400';
-          showToast("Đã tắt Tự khớp — Nhấn Enter để kiểm tra");
-        }
+        updateSettingsButtonsUI();
+        persistProgressImmediately();
+        showToast(state.autoMatch ? 'Đã bật Tự khớp ngay khi gõ đúng' : 'Đã tắt Tự khớp — Nhấn Enter để kiểm tra');
         focusActiveInput();
       });
 
       dom.btnShuffle.addEventListener('click', shuffleCurrentDeck);
-      dom.fileImportInput.addEventListener('change', handleFileUpload);
 
-      // Deck Modal
+      dom.btnReviewWrongTop.addEventListener('click', () => {
+        const savedWrong = state.progressMap[state.deckIndex]?.wrongWords || [];
+        const combined = [...state.missedInSession];
+        savedWrong.forEach(w => {
+          if (!combined.some(x => x[0] === w[0])) combined.push(w);
+        });
+
+        if (combined.length === 0) {
+          showToast('Chưa có từ nào gõ sai trong bộ này!');
+          return;
+        }
+        selectDeck(state.deckIndex, combined, false);
+        showToast(`Đang ôn tập ${combined.length} từ từng gõ sai!`);
+      });
+
+      dom.fileImportInput.addEventListener('change', handleFileUpload);
+      dom.btnResetToDefault.addEventListener('click', resetToDefaultDataset);
+
       dom.btnOpenDeckModal.addEventListener('click', openDeckModal);
       dom.btnCloseDeckModal.addEventListener('click', closeDeckModal);
       dom.btnCloseDeckModalFooter.addEventListener('click', closeDeckModal);
@@ -1629,44 +2067,39 @@
         if (e.target === dom.deckModal) closeDeckModal();
       });
 
-      dom.btnResetAllProgress.addEventListener('click', () => {
+      dom.btnResetProgressOnly.addEventListener('click', async () => {
         state.progressMap = {};
-        saveProgressToStorage();
+        await persistProgressImmediately();
         openDeckModal();
-        updateHeaderInfo();
-        showToast("Đã đặt lại toàn bộ tiến độ học tập");
+        populateDeckDropdown();
+        updateTopWrongBadge();
+        showToast('Đã đặt lại toàn bộ tiến độ học tập!');
       });
 
-      // Summary Modal Actions
       dom.btnPracticeMissed.addEventListener('click', () => {
         const missedCopy = [...state.missedInSession];
         closeSummaryModal();
-        selectDeck(state.deckIndex, missedCopy);
+        selectDeck(state.deckIndex, missedCopy, false);
       });
 
       dom.btnReplayDeck.addEventListener('click', () => {
         closeSummaryModal();
-        selectDeck(state.deckIndex);
+        selectDeck(state.deckIndex, null, false);
       });
 
       dom.btnNextDeck.addEventListener('click', () => {
         closeSummaryModal();
         const nextIdx = (state.deckIndex + 1) % getTotalDecks();
-        selectDeck(nextIdx);
+        selectDeck(nextIdx, null, true);
       });
     }
 
-    // ==================== INITIALIZATION ====================
-    function initDecksAndRender(resetToFirst = false) {
-      loadProgressFromStorage();
-      selectDeck(resetToFirst ? 0 : state.deckIndex);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
+    // ==================== BOOTSTRAP ====================
+    window.addEventListener('DOMContentLoaded', async () => {
       bindEvents();
       start120FpsRenderLoop();
-      initDecksAndRender(true);
-      tryAutoLoadCompactJson();
+      await hydrateFromPermanentStorage();
+      selectDeck(state.deckIndex, null, true);
     });
   </script>
 </body>
